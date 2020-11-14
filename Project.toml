@@ -1,0 +1,4 @@
+name = "GoogleSheets"
+uuid = "831f653e-6dbc-49a2-ac93-eebfaa09c6e6"
+authors = ["David R. (Chip) Kent IV <chipkent@cecropiacapital.com>"]
+version = "0.1.0"
