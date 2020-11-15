@@ -1,4 +1,13 @@
 
+#
+# Details on the Google Sheets API can be found at:
+# https://developers.google.com/sheets/api/guides/concepts
+#
+# The quickstart guide is also useful
+# https://developers.google.com/sheets/api/quickstart/python
+#
+
+
 """
 A package for working with Google Sheets.
 """
@@ -6,12 +15,7 @@ module GoogleSheets
 
 using PyCall
 
-export AuthService, auth_service, Spreadsheet, CellRange, get, update
-
-#TODO ??? to docs???
-# main one -> https://developers.google.com/sheets/api/guides/concepts
-# https://developers.google.com/sheets/api/quickstart/python
-# https://developers.google.com/sheets/api/guides/authorizing
+export GoogleSheetsClient, sheets_client, Spreadsheet, CellRange, get, update
 
 
 """
@@ -27,12 +31,12 @@ end
 
 
 """
-A permission for accessing Google resources.
+An authorization scope for accessing Google resources.
 
 AUTH_SPREADSHEET_READONLY:  Allows read-only access to the user's sheets and their properties.
 AUTH_SPREADSHEET_READWRITE: Allows read/write access to the user's sheets and their properties.
 """
-@exported_enum AuthPermission AUTH_SPREADSHEET_READONLY AUTH_SPREADSHEET_READWRITE
+@exported_enum AuthScope AUTH_SPREADSHEET_READONLY AUTH_SPREADSHEET_READWRITE
 
 
 const permission_urls = Dict(
@@ -71,27 +75,26 @@ end
 
 
 """
-Maps permissions to the appropriate permission URLs.
+Maps authorization scopes to the appropriate permission URLs.
 """
-function scope_urls(permissions::AuthPermission)::Array{String,1}
-    return [permission_urls[permissions]]
+function scope_urls(scopes::AuthScope)::Array{String,1}
+    return [permission_urls[scopes]]
 end
 
 
 """
-Maps permissions to the appropriate permission URLs.
+Maps authorization scopes to the appropriate permission URLs.
 """
-function scope_urls(permissions::Array{AuthPermission,1})::Array{String,1}
-    return [permission_urls[perm] for perm in permissions]
+function scope_urls(scopes::Array{AuthScope,1})::Array{String,1}
+    return [permission_urls[scope] for scope in scopes]
 end
 
 
-#TODO rename -> rename AUTH stuff to client???
 #TODO handle token file locations
 """
 Creates a client for accessing Google Sheets.
 """
-function sheets_client(permissions::Union{AuthPermission,Array{AuthPermission,1}})::GoogleSheetsClient
+function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheetsClient
     pickle = pyimport("pickle")
     os_path = pyimport("os.path")
     build = pyimport("googleapiclient.discovery").build
@@ -99,7 +102,7 @@ function sheets_client(permissions::Union{AuthPermission,Array{AuthPermission,1}
     Request = pyimport("google.auth.transport.requests").Request
     open = pybuiltin("open")
 
-    scopes = scope_urls(permissions)
+    scopesUrls = scope_urls(scopes)
     creds = nothing
 
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -116,7 +119,7 @@ function sheets_client(permissions::Union{AuthPermission,Array{AuthPermission,1}
         if !isnothing(creds) && creds.expired && !isnothing(creds.refresh_token)
             creds.refresh(Request())
         else
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", scopes)
+            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", scopeUrls)
             creds = flow.run_local_server(port=0)
         end
 
@@ -144,8 +147,6 @@ function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
 end
 
 #TODO add put! update?
-#TODO return value type???
-#TODO document raw
 """
 Updates a range of cell values in a spreadsheet.
 
@@ -172,5 +173,16 @@ function update(client::GoogleSheetsClient, range::CellRange, values::Array{<:An
     #TODO return a struct?? with a cell range???
     return result
 end
+
+#TODO batchGet
+#TODO batchUpdate
+#TODO append
+#TODO add sheet
+#TODO delete sheet
+#TODO add chart
+#TODO add filterview
+#TODO add conditional formatting
+#TODO insert rows
+#TODO delete rows
 
 end # module
