@@ -90,7 +90,50 @@ function scope_urls(scopes::Array{AuthScope,1})::Array{String,1}
 end
 
 
-#TODO handle token file locations
+"""
+Directory containing configuration files.
+"""
+config_dir = "~/.julia/config/google_sheets/"
+
+
+"""
+Gets the credentials file needed to log into Google.
+See the python quick start reference for a link to generate credentials.
+https://developers.google.com/sheets/api/quickstart/python
+"""
+function credentials_file()::String
+    file = "credentials.json"
+    return joinpath(config_dir, file)
+end
+
+
+"""
+Gets a cached token file which allows access to Google Sheets with
+specific authorization scopes.
+"""
+function token_file(scopes::AuthScope)::String
+    return token_file([scopes])
+end
+
+
+"""
+Gets a cached token file which allows access to Google Sheets with
+specific authorization scopes.
+"""
+function token_file(scopes::Array{AuthScope,1})::String
+    s = sort(unique(copy(scopes)))
+
+    id = 0
+
+    for i in 1:length(s)
+        id += Int(s[i]) * 10^i
+    end
+
+    file = "google_sheets_token.$id.pickle"
+    return joinpath(config_dir, file)
+end
+
+
 """
 Creates a client for accessing Google Sheets.
 """
@@ -102,14 +145,16 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheet
     Request = pyimport("google.auth.transport.requests").Request
     open = pybuiltin("open")
 
-    scopesUrls = scope_urls(scopes)
+    credentialsFile = credentials_file()
+    tokenFile = token_file(scopes)
+    scopeUrls = scope_urls(scopes)
     creds = nothing
 
     # The file token.pickle stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os_path.exists("token.pickle")
-        @pywith open("token.pickle", "rb") as token begin
+    if os_path.exists(tokenFile)
+        @pywith open(tokenFile, "rb") as token begin
             creds = pickle.load(token)
         end
     end
@@ -119,12 +164,12 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheet
         if !isnothing(creds) && creds.expired && !isnothing(creds.refresh_token)
             creds.refresh(Request())
         else
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", scopeUrls)
+            flow = InstalledAppFlow.from_client_secrets_file(credentialsFile, scopeUrls)
             creds = flow.run_local_server(port=0)
         end
 
         # Save the credentials for the next run
-        @pywith open("token.pickle", "wb") as token begin
+        @pywith open(tokenFile, "wb") as token begin
             pickle.dump(creds, token)
         end
     end
