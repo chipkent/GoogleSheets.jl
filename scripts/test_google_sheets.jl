@@ -10,7 +10,7 @@ SAMPLE_SPREADSHEET_ID = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
 SAMPLE_RANGE_NAME = "Class Data!A2:E"
 
 sheet = Spreadsheet(SAMPLE_SPREADSHEET_ID)
-range = Range(sheet, SAMPLE_RANGE_NAME)
+range = CellRange(sheet, SAMPLE_RANGE_NAME)
 result = get(auth, range)
 
 println("KEYS: $(keys(result))")
@@ -26,6 +26,7 @@ else
         println("ROW: $row")
     end
 
+    println("")
     println("Name, Major:")
     for row in eachrow(values)
         # Print columns A and E, which correspond to indices 1 and 5.
