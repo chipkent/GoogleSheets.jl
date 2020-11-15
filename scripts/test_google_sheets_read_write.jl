@@ -3,7 +3,7 @@ using GoogleSheets
 
 # Example based upon: # https://developers.google.com/sheets/api/quickstart/python
 
-auth = auth_service(AUTH_SPREADSHEET_READWRITE)
+client = sheets_client(AUTH_SPREADSHEET_READWRITE)
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
@@ -11,7 +11,7 @@ SAMPLE_RANGE_NAME = "Sheet1"
 
 sheet = Spreadsheet(SAMPLE_SPREADSHEET_ID)
 range = CellRange(sheet, SAMPLE_RANGE_NAME)
-result = get(auth, range)
+result = get(client, range)
 
 println("KEYS: $(keys(result))")
 println("RANGE: $(result["range"])")
@@ -38,7 +38,7 @@ values = ["0" "1" "2"; "a" "=A1+B1" 33]
 println(values)
 
 try
-    global result = update(auth, range, values)
+    global result = update(client, range, values)
 catch e
     println("ERROR: $e")
     println("STACK: $(e.traceback)")

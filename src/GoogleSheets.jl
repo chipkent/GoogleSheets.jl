@@ -41,21 +41,13 @@ const permission_urls = Dict(
 )
 
 
-#TODO support all of these?
-# Scope	Meaning
-# https://www.googleapis.com/auth/spreadsheets.readonly	Allows read-only access to the user's sheets and their properties.
-# https://www.googleapis.com/auth/spreadsheets	Allows read/write access to the user's sheets and their properties.
-# https://www.googleapis.com/auth/drive.readonly	Allows read-only access to the user's file metadata and file content.
-# https://www.googleapis.com/auth/drive.file	Per-file access to files created or opened by the app.
-# https://www.googleapis.com/auth/drive	Full, permissive scope to access all of a user's files. Request this scope only when it is strictly necessary.
-
-
 """
-An authentication service.
+A Google Sheets client.
 """
-struct AuthService
-    service
+struct GoogleSheetsClient
+    client
 end
+
 
 """
 A spreadsheet.
@@ -64,6 +56,7 @@ struct Spreadsheet
     """Spreadsheet unique identifier."""
     id::String
 end
+
 
 """
 A range of cells within a spreadsheet.
@@ -76,18 +69,29 @@ struct CellRange
     range::String
 end
 
+
+"""
+Maps permissions to the appropriate permission URLs.
+"""
 function scope_urls(permissions::AuthPermission)::Array{String,1}
     return [permission_urls[permissions]]
 end
 
+
+"""
+Maps permissions to the appropriate permission URLs.
+"""
 function scope_urls(permissions::Array{AuthPermission,1})::Array{String,1}
     return [permission_urls[perm] for perm in permissions]
 end
 
-#TODO rename AUTH stuff to client???
-#TODO rename
-#TODO document
-function auth_service(permissions::Union{AuthPermission,Array{AuthPermission,1}})::AuthService
+
+#TODO rename -> rename AUTH stuff to client???
+#TODO handle token file locations
+"""
+Creates a client for accessing Google Sheets.
+"""
+function sheets_client(permissions::Union{AuthPermission,Array{AuthPermission,1}})::GoogleSheetsClient
     pickle = pyimport("pickle")
     os_path = pyimport("os.path")
     build = pyimport("googleapiclient.discovery").build
@@ -95,13 +99,7 @@ function auth_service(permissions::Union{AuthPermission,Array{AuthPermission,1}}
     Request = pyimport("google.auth.transport.requests").Request
     open = pybuiltin("open")
 
-    #TODO scopes selection
-    #TODO map scope to tokens
-    #TODO @enum to make an enum ---> right or wrong way??? or a class with stuff in it? or sym?
-    # If modifying these scopes, delete the file token.pickle.
-    # SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"]
-    SCOPES = scope_urls(permissions)
-
+    scopes = scope_urls(permissions)
     creds = nothing
 
     # The file token.pickle stores the user's access and refresh tokens, and is
@@ -118,7 +116,7 @@ function auth_service(permissions::Union{AuthPermission,Array{AuthPermission,1}}
         if !isnothing(creds) && creds.expired && !isnothing(creds.refresh_token)
             creds.refresh(Request())
         else
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", scopes)
             creds = flow.run_local_server(port=0)
         end
 
@@ -128,15 +126,15 @@ function auth_service(permissions::Union{AuthPermission,Array{AuthPermission,1}}
         end
     end
 
-    return AuthService(build("sheets", "v4", credentials=creds))
+    return GoogleSheetsClient(build("sheets", "v4", credentials=creds))
 end
 
 
 """
 Gets a range of cell values from a spreadsheet.
 """
-function Base.get(auth::AuthService, range::CellRange)::Dict{Any,Any}
-    sheet = auth.service.spreadsheets()
+function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
+    sheet = client.client.spreadsheets()
     result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
                                 majorDimension="ROWS",
                                 range=range.range).execute()
@@ -150,14 +148,22 @@ end
 #TODO document raw
 """
 Updates a range of cell values in a spreadsheet.
+
+# Arguments
+- `client::GoogleSheetsClient`: client for interacting with Google Sheets.
+- `range::CellRange`: cell range to modify.
+- `values::Array{<:Any,2}`: values to place in the spreadsheet.
+- `raw::Bool=false`: true treats values as raw, unparsed values and and are simply
+    inserted as a string.  false treats values exactly as if they were entered into
+    the Google Sheets UI, for example "=A1+B1" is a formula.
 """
-function update(auth::AuthService, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::Dict{Any,Any}
+function update(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::Dict{Any,Any}
     body = Dict(
         "values" => values,
         "majorDimension" => "ROWS",
     )
 
-    sheet = auth.service.spreadsheets()
+    sheet = client.client.spreadsheets()
     result = sheet.values().update(spreadsheetId=range.spreadsheet.id,
                                 range=range.range,
                                 valueInputOption= raw ? "RAW" : "USER_ENTERED",
