@@ -14,6 +14,7 @@ A package for working with Google Sheets.
 module GoogleSheets
 
 using PyCall
+import MacroTools
 
 export GoogleSheetsClient, sheets_client, Spreadsheet, CellRange, get, update
 
@@ -26,6 +27,25 @@ macro exported_enum(name, args...)
         @enum($name, $(args...))
         export $name
         $([:(export $arg) for arg in args]...)
+    end)
+end
+
+"""
+Print details on a python exception.
+"""
+macro print_python_exception(ex)
+    # MacroTools.@q is used instead of quote so that the returned stacktrace
+    # has line numbers from the calling function and not the macro.
+    return esc(MacroTools.@q begin
+        try
+            $ex
+        catch e
+            println("PYTHON ERROR: $e")
+            tb = pyimport("traceback")
+            tb.print_exception(e.traceback)
+            tb.print_tb(e.traceback)
+            rethrow(e)
+        end
     end)
 end
 
@@ -150,31 +170,33 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheet
     scopeUrls = scope_urls(scopes)
     creds = nothing
 
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os_path.exists(tokenFile)
-        @pywith open(tokenFile, "rb") as token begin
-            creds = pickle.load(token)
+    @print_python_exception begin
+        # The file token.pickle stores the user's access and refresh tokens, and is
+        # created automatically when the authorization flow completes for the first
+        # time.
+        if os_path.exists(tokenFile)
+            @pywith open(tokenFile, "rb") as token begin
+                creds = pickle.load(token)
+            end
         end
+
+        # If there are no (valid) credentials available, let the user log in.
+        if isnothing(creds) || !creds.valid
+            if !isnothing(creds) && creds.expired && !isnothing(creds.refresh_token)
+                creds.refresh(Request())
+            else
+                flow = InstalledAppFlow.from_client_secrets_file(credentialsFile, scopeUrls)
+                creds = flow.run_local_server(port=0)
+            end
+
+            # Save the credentials for the next run
+            @pywith open(tokenFile, "wb") as token begin
+                pickle.dump(creds, token)
+            end
+        end
+
+        return GoogleSheetsClient(build("sheets", "v4", credentials=creds))
     end
-
-    # If there are no (valid) credentials available, let the user log in.
-    if isnothing(creds) || !creds.valid
-        if !isnothing(creds) && creds.expired && !isnothing(creds.refresh_token)
-            creds.refresh(Request())
-        else
-            flow = InstalledAppFlow.from_client_secrets_file(credentialsFile, scopeUrls)
-            creds = flow.run_local_server(port=0)
-        end
-
-        # Save the credentials for the next run
-        @pywith open(tokenFile, "wb") as token begin
-            pickle.dump(creds, token)
-        end
-    end
-
-    return GoogleSheetsClient(build("sheets", "v4", credentials=creds))
 end
 
 
@@ -182,13 +204,15 @@ end
 Gets a range of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
-    sheet = client.client.spreadsheets()
-    result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
-                                majorDimension="ROWS",
-                                range=range.range).execute()
+    @print_python_exception begin
+        sheet = client.client.spreadsheets()
+        result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
+                                    majorDimension="ROWS",
+                                    range=range.range).execute()
 
-    #TODO return a struct?? with a cell range???
-    return result
+        #TODO return a struct?? with a cell range???
+        return result
+    end
 end
 
 
@@ -210,14 +234,16 @@ function update(client::GoogleSheetsClient, range::CellRange, values::Array{<:An
         "majorDimension" => "ROWS",
     )
 
-    sheet = client.client.spreadsheets()
-    result = sheet.values().update(spreadsheetId=range.spreadsheet.id,
+    @print_python_exception begin
+        sheet = client.client.spreadsheets()
+        result = sheet.values().update(spreadsheetId=range.spreadsheet.id,
                                 range=range.range,
                                 valueInputOption= raw ? "RAW" : "USER_ENTERED",
                                 body=body).execute()
 
-    #TODO return a struct?? with a cell range???
-    return result
+        #TODO return a struct?? with a cell range???
+        return result
+    end
 end
 
 #TODO batchGet
