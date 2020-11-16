@@ -40,7 +40,9 @@ macro print_python_exception(ex)
         try
             $ex
         catch e
-            println("PYTHON ERROR: $e")
+            println("Python error:")
+            println(e)
+            println("Python stacktrace:")
             tb = pyimport("traceback")
             tb.print_exception(e.traceback)
             tb.print_tb(e.traceback)
@@ -113,7 +115,7 @@ end
 """
 Directory containing configuration files.
 """
-config_dir = "~/.julia/config/google_sheets/"
+config_dir = joinpath(homedir(),".julia/config/google_sheets/")
 
 
 """
@@ -168,9 +170,10 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheet
     credentialsFile = credentials_file()
     tokenFile = token_file(scopes)
     scopeUrls = scope_urls(scopes)
-    creds = nothing
 
     @print_python_exception begin
+        creds = nothing
+
         # The file token.pickle stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
