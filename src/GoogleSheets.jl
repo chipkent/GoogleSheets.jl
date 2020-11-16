@@ -80,7 +80,7 @@ A spreadsheet.
 """
 struct Spreadsheet
     """Spreadsheet unique identifier."""
-    id::String
+    id::AbstractString
 end
 
 
@@ -92,7 +92,7 @@ struct CellRange
     spreadsheet::Spreadsheet
 
     """Range of cells."""
-    range::String
+    range::AbstractString
 end
 
 
