@@ -49,7 +49,6 @@ macro print_python_exception(ex)
         try
             $ex
         catch e
-            #TODO how to fix this???
             if hasfield(typeof(e), :traceback)
                 println("Python error:")
                 println(e)
