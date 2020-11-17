@@ -382,6 +382,13 @@ Applies one or more updates to a spreadsheet.
 
 Each request is validated before being applied. If any request is not valid then
 the entire request will fail and nothing will be applied.
+
+Common batch_update! functionality:
+Charts: https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
+Filters: https://developers.google.com/sheets/api/guides/filters
+Basic formatting: https://developers.google.com/sheets/api/samples/formatting
+Conditional formatting: https://developers.google.com/sheets/api/samples/conditional-formatting
+Conditional formatting: https://developers.google.com/sheets/api/guides/conditional-format
 """
 function batch_update!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
     @_print_python_exception begin
@@ -635,8 +642,9 @@ function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
 end
 
 
-#TODO add chart
-#TODO add filterview
-#TODO add conditional formatting
+#TODO add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
+#TODO add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
+#TODO add basic formatting -> https://developers.google.com/sheets/api/samples/formatting
+#TODO add conditional formatting -> https://developers.google.com/sheets/api/samples/conditional-formatting  https://developers.google.com/sheets/api/guides/conditional-format
 
 end # module
