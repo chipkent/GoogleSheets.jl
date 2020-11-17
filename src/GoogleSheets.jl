@@ -30,7 +30,7 @@ config_dir = joinpath(homedir(),".julia/config/google_sheets/")
 """
 Create an enum and export the enum type and all values.
 """
-macro exported_enum(name, args...)
+macro _exported_enum(name, args...)
     return esc(quote
         @enum($name, $(args...))
         export $name
@@ -42,7 +42,7 @@ end
 """
 Print details on a python exception.
 """
-macro print_python_exception(ex)
+macro _print_python_exception(ex)
     # MacroTools.@q is used instead of quote so that the returned stacktrace
     # has line numbers from the calling function and not the macro.
     return esc(MacroTools.@q begin
@@ -69,10 +69,10 @@ An authorization scope for accessing Google resources.
 AUTH_SPREADSHEET_READONLY:  Allows read-only access to the user's sheets and their properties.
 AUTH_SPREADSHEET_READWRITE: Allows read/write access to the user's sheets and their properties.
 """
-@exported_enum AuthScope AUTH_SPREADSHEET_READONLY AUTH_SPREADSHEET_READWRITE
+@_exported_enum AuthScope AUTH_SPREADSHEET_READONLY AUTH_SPREADSHEET_READWRITE
 
 
-const permission_urls = Dict(
+const _permission_urls = Dict(
     AUTH_SPREADSHEET_READONLY => "https://www.googleapis.com/auth/spreadsheets.readonly",
     AUTH_SPREADSHEET_READWRITE => "https://www.googleapis.com/auth/spreadsheets",
 )
@@ -122,16 +122,16 @@ end
 """
 Maps authorization scopes to the appropriate permission URLs.
 """
-function scope_urls(scopes::AuthScope)::Array{String,1}
-    return [permission_urls[scopes]]
+function _scope_urls(scopes::AuthScope)::Array{String,1}
+    return [_permission_urls[scopes]]
 end
 
 
 """
 Maps authorization scopes to the appropriate permission URLs.
 """
-function scope_urls(scopes::Array{AuthScope,1})::Array{String,1}
-    return [permission_urls[scope] for scope in scopes]
+function _scope_urls(scopes::Array{AuthScope,1})::Array{String,1}
+    return [_permission_urls[scope] for scope in scopes]
 end
 
 
@@ -150,8 +150,8 @@ end
 Gets a cached token file which allows access to Google Sheets with
 specific authorization scopes.
 """
-function token_file(scopes::AuthScope)::String
-    return token_file([scopes])
+function _token_file(scopes::AuthScope)::String
+    return _token_file([scopes])
 end
 
 
@@ -159,7 +159,7 @@ end
 Gets a cached token file which allows access to Google Sheets with
 specific authorization scopes.
 """
-function token_file(scopes::Array{AuthScope,1})::String
+function _token_file(scopes::Array{AuthScope,1})::String
     s = sort(unique(copy(scopes)))
 
     id = 0
@@ -185,10 +185,10 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheet
     open = pybuiltin("open")
 
     credentialsFile = credentials_file()
-    tokenFile = token_file(scopes)
-    scopeUrls = scope_urls(scopes)
+    tokenFile = _token_file(scopes)
+    scopeUrls = _scope_urls(scopes)
 
-    @print_python_exception begin
+    @_print_python_exception begin
         creds = nothing
 
         # The file token.pickle stores the user's access and refresh tokens, and is
@@ -224,7 +224,7 @@ end
 Gets metadata about a spreadsheet.
 """
 function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Dict{Any,Any}
-    @print_python_exception begin
+    @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.get(spreadsheetId=spreadsheet.id).execute()
         return result
@@ -304,7 +304,7 @@ end
 Gets a range of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
-    @print_python_exception begin
+    @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
                                     majorDimension="ROWS",
@@ -318,7 +318,7 @@ end
 Gets multiple ranges of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Dict{Any,Any}
-    @print_python_exception begin
+    @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.values().batchGet(spreadsheetId=ranges.spreadsheet.id,
                                     majorDimension="ROWS",
@@ -345,7 +345,7 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
         "majorDimension" => "ROWS",
     )
 
-    @print_python_exception begin
+    @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.values().update(spreadsheetId=range.spreadsheet.id,
                                 range=range.range,
@@ -363,7 +363,7 @@ Each request is validated before being applied. If any request is not valid then
 the entire request will fail and nothing will be applied.
 """
 function batch_update!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
-    @print_python_exception begin
+    @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.batchUpdate(spreadsheetId=spreadsheet.id, body=body).execute()
         return result
@@ -557,7 +557,6 @@ function _insert!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
 end
 
 
-#TODO add _ to funcs or vars
 #TODO clear a range
 #TODO delete rows
 #TODO add chart
