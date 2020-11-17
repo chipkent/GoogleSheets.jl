@@ -37,15 +37,15 @@ println("MAJORDIM: $(result["majorDimension"])")
 values = ["0" "1" "2"; "a" "=A1+B1" 33]
 println(values)
 
-result = update(client, range, values)
+result = update!(client, range, values)
 
 println(meta(client,sheet))
 
 try
-    delete_sheet(client, sheet, "test sheet")
+    delete_sheet!(client, sheet, "test sheet")
     println("Deleted sheet")
 catch e
     println("No sheet to delete")
 end
 
-add_sheet(client, sheet, "test sheet")
+add_sheet!(client, sheet, "test sheet")

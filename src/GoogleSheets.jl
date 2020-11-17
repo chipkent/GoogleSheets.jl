@@ -16,10 +16,9 @@ module GoogleSheets
 using PyCall
 import MacroTools
 
-export GoogleSheetsClient, Spreadsheet, CellRange, sheets_client, meta, get, update,
-        batch_update, add_sheet, delete_sheet
+export GoogleSheetsClient, Spreadsheet, CellRange, sheets_client, meta, get, update!,
+        batch_update!, add_sheet!, delete_sheet!
 
-#TODO rename funcs with !
 
 """
 Directory containing configuration files.
@@ -269,7 +268,7 @@ Updates a range of cell values in a spreadsheet.
     inserted as a string.  false treats values exactly as if they were entered into
     the Google Sheets UI, for example "=A1+B1" is a formula.
 """
-function update(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::Dict{Any,Any}
+function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::Dict{Any,Any}
     body = Dict(
         "values" => values,
         "majorDimension" => "ROWS",
@@ -288,14 +287,13 @@ function update(client::GoogleSheetsClient, range::CellRange, values::Array{<:An
 end
 
 
-#TODO rename => batch_update! ???
 """
 Applies one or more updates to a spreadsheet.
 
 Each request is validated before being applied. If any request is not valid then
 the entire request will fail and nothing will be applied.
 """
-function batch_update(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
+function batch_update!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
     @print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.batchUpdate(spreadsheetId=spreadsheet.id, body=body).execute()
@@ -306,11 +304,10 @@ function batch_update(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body
 end
 
 
-#TODO rename => add?
 """
 Adds a new sheet to a spreadsheet.
 """
-function add_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+function add_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
@@ -323,25 +320,23 @@ function add_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::
         ],
     )
 
-    return batch_update(client, spreadsheet, body)
+    return batch_update!(client, spreadsheet, body)
 end
 
 
-#TODO rename => delete? delete!
 """
 Removes a sheet from a spreadsheet.
 """
-function delete_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
-    return delete_sheet(client, spreadsheet, properties["sheetId"])
+    return delete_sheet!(client, spreadsheet, properties["sheetId"])
 end
 
 
-#TODO rename => delete?
 """
 Removes a sheet from a spreadsheet.
 """
-function delete_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheetId::Int64)::Dict{Any,Any}
+function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheetId::Int64)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
@@ -352,7 +347,7 @@ function delete_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, shee
         ],
     )
 
-    return batch_update(client, spreadsheet, body)
+    return batch_update!(client, spreadsheet, body)
 end
 
 
