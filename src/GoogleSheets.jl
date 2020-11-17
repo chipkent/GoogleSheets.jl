@@ -18,7 +18,7 @@ using JSON
 import MacroTools
 
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, sheets_client, meta, show, get, update!,
-        batch_update!, add_sheet!, delete_sheet!
+        batch_update!, add_sheet!, delete_sheet!, freeze!
 
 
 """
@@ -409,6 +409,51 @@ function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, she
             Dict(
                 "deleteSheet" => Dict(
                     "sheetId" => sheet_id,
+                ),
+            ),
+        ],
+    )
+
+    return batch_update!(client, spreadsheet, body)
+end
+
+
+"""
+Freeze rows or columns in a sheet.
+"""
+function freeze!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, rows::Int64=0, cols::Int64=0)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return freeze!(client, spreadsheet, properties["sheetId"], rows, cols)
+end
+
+
+"""
+Freeze rows or columns in a sheet.
+"""
+function freeze!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, rows::Int64=0, cols::Int64=0)::Dict{Any,Any}
+    body = Dict(
+        "requests" => [
+            Dict(
+                "updateSheetProperties" => Dict(
+                    "properties" => Dict(
+                        "sheetId" => sheet_id,
+                        "gridProperties" => Dict(
+                            "frozenRowCount" => rows,
+                        ),
+                    ),
+                    "fields" => "gridProperties.frozenRowCount",
+                ),
+            ),
+
+            Dict(
+                "updateSheetProperties" => Dict(
+                    "properties" => Dict(
+                        "sheetId" => sheet_id,
+                        "gridProperties" => Dict(
+                            "frozenColumnCount" => cols,
+                        ),
+                    ),
+                    "fields" => "gridProperties.frozenColumnCount",
                 ),
             ),
         ],

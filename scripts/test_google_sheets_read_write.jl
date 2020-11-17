@@ -72,3 +72,5 @@ add_sheet!(client, sheet, "test sheet")
 
 println()
 show(client, sheet, "test sheet")
+
+freeze!(client, sheet, "test sheet", 2, 3)
