@@ -39,7 +39,8 @@ println(values)
 
 result = update!(client, range, values)
 
-println(meta(client,sheet))
+println()
+show(client, sheet)
 
 try
     delete_sheet!(client, sheet, "test sheet")
@@ -49,3 +50,6 @@ catch e
 end
 
 add_sheet!(client, sheet, "test sheet")
+
+println()
+show(client, sheet, "test sheet")

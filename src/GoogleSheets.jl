@@ -14,9 +14,10 @@ A package for working with Google Sheets.
 module GoogleSheets
 
 using PyCall
+using JSON
 import MacroTools
 
-export GoogleSheetsClient, Spreadsheet, CellRange, sheets_client, meta, get, update!,
+export GoogleSheetsClient, Spreadsheet, CellRange, sheets_client, meta, show, get, update!,
         batch_update!, add_sheet!, delete_sheet!
 
 
@@ -36,6 +37,7 @@ macro exported_enum(name, args...)
         $([:(export $arg) for arg in args]...)
     end)
 end
+
 
 """
 Print details on a python exception.
@@ -239,6 +241,55 @@ end
 
 
 """
+Gets metadata about a spreadsheet sheet.
+"""
+function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)::Dict{Any,Any}
+    metadata = meta(client, spreadsheet)
+    sheets = metadata["sheets"]
+
+    for sheet in sheets
+        properties = sheet["properties"]
+
+        if properties["sheetId"] == sheet_id
+            return properties
+        end
+    end
+
+    throw(KeyError(sheet_id))
+end
+
+
+"""
+Prints metadata about a spreadsheet.
+"""
+function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet)
+    m = meta(client, spreadsheet)
+    println("Spreadsheet:")
+    println(json(m, 4))
+end
+
+
+"""
+Prints metadata about a spreadsheet sheet.
+"""
+function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)
+    m = meta(client, spreadsheet, title)
+    println("Sheet:")
+    println(json(m, 4))
+end
+
+
+"""
+Prints metadata about a spreadsheet sheet.
+"""
+function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)
+    m = meta(client, spreadsheet, sheet_id)
+    println("Sheet:")
+    println(json(m, 4))
+end
+
+
+"""
 Gets a range of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
@@ -252,7 +303,6 @@ function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
 end
 
 
-#TODO add put! update?
 """
 Updates a range of cell values in a spreadsheet.
 
@@ -328,12 +378,12 @@ end
 """
 Removes a sheet from a spreadsheet.
 """
-function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheetId::Int64)::Dict{Any,Any}
+function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
                 "deleteSheet" => Dict(
-                    "sheetId" => sheetId,
+                    "sheetId" => sheet_id,
                 ),
             ),
         ],
