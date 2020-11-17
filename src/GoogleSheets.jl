@@ -16,7 +16,15 @@ module GoogleSheets
 using PyCall
 import MacroTools
 
-export GoogleSheetsClient, sheets_client, Spreadsheet, CellRange, get, update
+export GoogleSheetsClient, Spreadsheet, CellRange, sheets_client, meta, get, update,
+        batch_update, add_sheet, delete_sheet
+
+#TODO rename funcs with !
+
+"""
+Directory containing configuration files.
+"""
+config_dir = joinpath(homedir(),".julia/config/google_sheets/")
 
 
 """
@@ -40,12 +48,15 @@ macro print_python_exception(ex)
         try
             $ex
         catch e
-            println("Python error:")
-            println(e)
-            println("Python stacktrace:")
-            tb = pyimport("traceback")
-            tb.print_exception(e.traceback)
-            tb.print_tb(e.traceback)
+            #TODO how to fix this???
+            if hasfield(typeof(e), :traceback)
+                println("Python error:")
+                println(e)
+                println("Python stacktrace:")
+                tb = pyimport("traceback")
+                tb.print_exception(e.traceback)
+                tb.print_tb(e.traceback)
+            end
             rethrow(e)
         end
     end)
@@ -110,12 +121,6 @@ Maps authorization scopes to the appropriate permission URLs.
 function scope_urls(scopes::Array{AuthScope,1})::Array{String,1}
     return [permission_urls[scope] for scope in scopes]
 end
-
-
-"""
-Directory containing configuration files.
-"""
-config_dir = joinpath(homedir(),".julia/config/google_sheets/")
 
 
 """
@@ -204,6 +209,39 @@ end
 
 
 """
+Gets metadata about a spreadsheet.
+"""
+function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Dict{Any,Any}
+    @print_python_exception begin
+        sheet = client.client.spreadsheets()
+        result = sheet.get(spreadsheetId=spreadsheet.id).execute()
+
+        #TODO return a struct?? with a cell range???
+        return result
+    end
+end
+
+
+"""
+Gets metadata about a spreadsheet sheet.
+"""
+function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+    metadata = meta(client, spreadsheet)
+    sheets = metadata["sheets"]
+
+    for sheet in sheets
+        properties = sheet["properties"]
+
+        if properties["title"] == title
+            return properties
+        end
+    end
+
+    throw(KeyError(title))
+end
+
+
+"""
 Gets a range of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
@@ -249,11 +287,77 @@ function update(client::GoogleSheetsClient, range::CellRange, values::Array{<:An
     end
 end
 
+
+#TODO rename => batch_update! ???
+"""
+Applies one or more updates to a spreadsheet.
+
+Each request is validated before being applied. If any request is not valid then
+the entire request will fail and nothing will be applied.
+"""
+function batch_update(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
+    @print_python_exception begin
+        sheet = client.client.spreadsheets()
+        result = sheet.batchUpdate(spreadsheetId=spreadsheet.id, body=body).execute()
+
+        #TODO return a struct?? with a cell range???
+        return result
+    end
+end
+
+
+#TODO rename => add?
+"""
+Adds a new sheet to a spreadsheet.
+"""
+function add_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+    body = Dict(
+        "requests" => [
+            Dict(
+                "addSheet" => Dict(
+                    "properties" => Dict(
+                        "title" => title,
+                    )
+                ),
+            ),
+        ],
+    )
+
+    return batch_update(client, spreadsheet, body)
+end
+
+
+#TODO rename => delete? delete!
+"""
+Removes a sheet from a spreadsheet.
+"""
+function delete_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return delete_sheet(client, spreadsheet, properties["sheetId"])
+end
+
+
+#TODO rename => delete?
+"""
+Removes a sheet from a spreadsheet.
+"""
+function delete_sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheetId::Int64)::Dict{Any,Any}
+    body = Dict(
+        "requests" => [
+            Dict(
+                "deleteSheet" => Dict(
+                    "sheetId" => sheetId,
+                ),
+            ),
+        ],
+    )
+
+    return batch_update(client, spreadsheet, body)
+end
+
+
 #TODO batchGet
-#TODO batchUpdate
 #TODO append
-#TODO add sheet
-#TODO delete sheet
 #TODO add chart
 #TODO add filterview
 #TODO add conditional formatting

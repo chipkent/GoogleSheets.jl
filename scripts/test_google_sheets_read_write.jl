@@ -37,13 +37,15 @@ println("MAJORDIM: $(result["majorDimension"])")
 values = ["0" "1" "2"; "a" "=A1+B1" 33]
 println(values)
 
+result = update(client, range, values)
+
+println(meta(client,sheet))
+
 try
-    global result = update(client, range, values)
+    delete_sheet(client, sheet, "test sheet")
+    println("Deleted sheet")
 catch e
-    println("ERROR: $e")
-    println("STACK: $(e.traceback)")
-    using PyCall
-    tb = pyimport("traceback")
-    tb.print_tb(e.traceback)
-    tb.print_exception(e.traceback)
+    println("No sheet to delete")
 end
+
+add_sheet(client, sheet, "test sheet")
