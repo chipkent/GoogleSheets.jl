@@ -214,8 +214,6 @@ function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Dict{Any,An
     @print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.get(spreadsheetId=spreadsheet.id).execute()
-
-        #TODO return a struct?? with a cell range???
         return result
     end
 end
@@ -249,8 +247,6 @@ function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
         result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
                                     majorDimension="ROWS",
                                     range=range.range).execute()
-
-        #TODO return a struct?? with a cell range???
         return result
     end
 end
@@ -280,8 +276,6 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
                                 range=range.range,
                                 valueInputOption= raw ? "RAW" : "USER_ENTERED",
                                 body=body).execute()
-
-        #TODO return a struct?? with a cell range???
         return result
     end
 end
@@ -297,8 +291,6 @@ function batch_update!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, bod
     @print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.batchUpdate(spreadsheetId=spreadsheet.id, body=body).execute()
-
-        #TODO return a struct?? with a cell range???
         return result
     end
 end
