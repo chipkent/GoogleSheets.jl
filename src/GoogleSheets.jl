@@ -18,7 +18,8 @@ using JSON
 import MacroTools
 
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, sheets_client, meta, show, get, update!,
-        batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!
+        batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
+        delete_rows!, delete_cols!
 
 
 """
@@ -557,8 +558,64 @@ function _insert!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
 end
 
 
+"""
+Delete rows from a sheet.
+"""
+function delete_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return delete_rows!(client, spreadsheet, properties["sheetId"], start_index, end_index)
+end
+
+
+"""
+Delete rows from a sheet.
+"""
+function delete_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+    return _delete!(client, spreadsheet, sheet_id, "ROWS", start_index, end_index)
+end
+
+
+"""
+Delete columns from a sheet.
+"""
+function delete_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return delete_cols!(client, spreadsheet, properties["sheetId"], start_index, end_index)
+end
+
+
+"""
+Delete columns from a sheet.
+"""
+function delete_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+    return _delete!(client, spreadsheet, sheet_id, "COLUMNS", start_index, end_index)
+end
+
+
+"""
+Delete rows or columns from a sheet.
+"""
+function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, dim::AbstractString, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+    body = Dict(
+        "requests" => [
+            Dict(
+                "deleteDimension" => Dict(
+                    "range" => Dict(
+                        "sheetId" => sheet_id,
+                        "dimension" => dim,
+                        "startIndex" => start_index,
+                        "endIndex" => end_index,
+                    ),
+                ),
+            ),
+        ],
+    )
+
+    return batch_update!(client, spreadsheet, body)
+end
+
+
 #TODO clear a range
-#TODO delete rows
 #TODO add chart
 #TODO add filterview
 #TODO add conditional formatting
