@@ -73,6 +73,10 @@ add_sheet!(client, sheet, "test sheet")
 println()
 show(client, sheet, "test sheet")
 
+values = fill(11, 5, 5)
+println("VALUES $(typeof(values)) $values")
+result = update!(client, CellRange(sheet, "test sheet"), values)
+
 freeze!(client, sheet, "test sheet", 2, 3)
 append!(client, sheet, "test sheet", 1000, 3)
 
@@ -81,3 +85,5 @@ insert_cols!(client, sheet, "test sheet", 2, 3, false)
 
 delete_rows!(client, sheet, "test sheet", 2, 3)
 delete_cols!(client, sheet, "test sheet", 2, 3)
+
+clear!(client, CellRange(sheet, "test sheet!B2:C3"))

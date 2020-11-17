@@ -18,7 +18,7 @@ using JSON
 import MacroTools
 
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, sheets_client, meta, show, get, update!,
-        batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
+        clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
         delete_rows!, delete_cols!
 
 
@@ -341,6 +341,9 @@ Updates a range of cell values in a spreadsheet.
     the Google Sheets UI, for example "=A1+B1" is a formula.
 """
 function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::Dict{Any,Any}
+    # There are serialization problems if the values are not Array{Any,2} or Array{String,2}
+    values = Any[values[i,j] for i in 1:size(values,1), j in 1:size(values,2)]
+
     body = Dict(
         "values" => values,
         "majorDimension" => "ROWS",
@@ -354,6 +357,23 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
                                 body=body).execute()
         return result
     end
+end
+
+
+"""
+Clears a range of cell values in a spreadsheet.
+"""
+function clear!(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
+    v = get(client, range)
+    rng = v["range"]
+    vls = v["values"]
+
+    if isnothing(values)
+        throw(ErrorException("No data found: range=$range"))
+    end
+
+    empty = fill("", size(vls))
+    return update!(client, CellRange(range.spreadsheet, rng), empty)
 end
 
 
@@ -615,7 +635,6 @@ function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
 end
 
 
-#TODO clear a range
 #TODO add chart
 #TODO add filterview
 #TODO add conditional formatting
