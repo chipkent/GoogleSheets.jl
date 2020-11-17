@@ -17,7 +17,7 @@ using PyCall
 using JSON
 import MacroTools
 
-export GoogleSheetsClient, Spreadsheet, CellRange, sheets_client, meta, show, get, update!,
+export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, sheets_client, meta, show, get, update!,
         batch_update!, add_sheet!, delete_sheet!
 
 
@@ -104,6 +104,18 @@ struct CellRange
 
     """Range of cells."""
     range::AbstractString
+end
+
+
+"""
+Multiple ranges of cells within a spreadsheet.
+"""
+struct CellRanges{T<:AbstractString}
+    """Spreadsheet containing the cells."""
+    spreadsheet::Spreadsheet
+
+    """Ranges of cells."""
+    ranges::Array{T,1}
 end
 
 
@@ -303,6 +315,20 @@ end
 
 
 """
+Gets multiple ranges of cell values from a spreadsheet.
+"""
+function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Dict{Any,Any}
+    @print_python_exception begin
+        sheet = client.client.spreadsheets()
+        result = sheet.values().batchGet(spreadsheetId=ranges.spreadsheet.id,
+                                    majorDimension="ROWS",
+                                    ranges=ranges.ranges).execute()
+        return result
+    end
+end
+
+
+"""
 Updates a range of cell values in a spreadsheet.
 
 # Arguments
@@ -392,7 +418,6 @@ function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, she
 end
 
 
-#TODO batchGet
 #TODO append
 #TODO add chart
 #TODO add filterview
