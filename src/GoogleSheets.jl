@@ -18,7 +18,7 @@ using JSON
 import MacroTools
 
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, sheets_client, meta, show, get, update!,
-        batch_update!, add_sheet!, delete_sheet!, freeze!, append!
+        batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!
 
 
 """
@@ -500,10 +500,68 @@ function Base.append!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, shee
 end
 
 
+"""
+Insert rows into to a sheet.
+"""
+function insert_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return insert_rows!(client, spreadsheet, properties["sheetId"], start_index, end_index, inherit_from_before)
+end
+
+
+"""
+Insert rows into to a sheet.
+"""
+function insert_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+    return _insert!(client, spreadsheet, sheet_id, "ROWS", start_index, end_index, inherit_from_before)
+end
+
+
+"""
+Insert columns into to a sheet.
+"""
+function insert_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return insert_cols!(client, spreadsheet, properties["sheetId"], start_index, end_index, inherit_from_before)
+end
+
+
+"""
+Insert columns into to a sheet.
+"""
+function insert_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+    return _insert!(client, spreadsheet, sheet_id, "COLUMNS", start_index, end_index, inherit_from_before)
+end
+
+
+"""
+Insert rows or columns into to a sheet.
+"""
+function _insert!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, dim::AbstractString, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+    body = Dict(
+        "requests" => [
+            Dict(
+                "insertDimension" => Dict(
+                    "range" => Dict(
+                        "sheetId" => sheet_id,
+                        "dimension" => dim,
+                        "startIndex" => start_index,
+                        "endIndex" => end_index,
+                    ),
+                ),
+            ),
+        ],
+    )
+
+    return batch_update!(client, spreadsheet, body)
+end
+
+
+#TODO add _ to funcs or vars
+#TODO clear a range
+#TODO delete rows
 #TODO add chart
 #TODO add filterview
 #TODO add conditional formatting
-#TODO insert rows
-#TODO delete rows
 
 end # module

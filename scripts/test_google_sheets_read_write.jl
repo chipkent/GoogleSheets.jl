@@ -75,3 +75,6 @@ show(client, sheet, "test sheet")
 
 freeze!(client, sheet, "test sheet", 2, 3)
 append!(client, sheet, "test sheet", 1000, 3)
+
+insert_rows!(client, sheet, "test sheet", 2, 3, false)
+insert_cols!(client, sheet, "test sheet", 2, 3, false)
