@@ -650,9 +650,9 @@ function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
 end
 
 
-#TODO add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
-#TODO add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
-#TODO add basic formatting -> https://developers.google.com/sheets/api/samples/formatting
-#TODO add conditional formatting -> https://developers.google.com/sheets/api/samples/conditional-formatting  https://developers.google.com/sheets/api/guides/conditional-format
+#TODO: add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
+#TODO: add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
+#TODO: add basic formatting -> https://developers.google.com/sheets/api/samples/formatting
+#TODO: add conditional formatting -> https://developers.google.com/sheets/api/samples/conditional-formatting  https://developers.google.com/sheets/api/guides/conditional-format
 
 end # module
