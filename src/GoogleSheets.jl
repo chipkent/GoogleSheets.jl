@@ -121,6 +121,21 @@ end
 
 
 """
+A range of cell values within a spreadsheet.
+"""
+struct CellRangeValues
+    """Range of cells within a spreadsheet."""
+    range::CellRange
+
+    """Values of cells within a spreadsheet."""
+    values
+
+    """Major dimension of the cell values."""
+    major_dimension::AbstractString
+end
+
+
+"""
 Maps authorization scopes to the appropriate permission URLs.
 """
 function _scope_urls(scopes::AuthScope)::Array{String,1}
@@ -312,13 +327,13 @@ end
 """
 Gets a range of cell values from a spreadsheet.
 """
-function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
+function Base.get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
     @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
                                     majorDimension="ROWS",
                                     range=range.range).execute()
-        return result
+        return CellRangeValues(CellRange(range.spreadsheet, result["range"]), haskey(result, "values") ? result["values"] : nothing, result["majorDimension"])
     end
 end
 
@@ -326,13 +341,14 @@ end
 """
 Gets multiple ranges of cell values from a spreadsheet.
 """
-function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Dict{Any,Any}
+function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Vector{CellRangeValues}
     @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.values().batchGet(spreadsheetId=ranges.spreadsheet.id,
                                     majorDimension="ROWS",
                                     ranges=ranges.ranges).execute()
-        return result
+
+        return [CellRangeValues(CellRange(ranges.spreadsheet, r["range"]), haskey(r, "values") ? r["values"] : nothing, r["majorDimension"]) for r in result["valueRanges"] ]
     end
 end
 
@@ -373,15 +389,15 @@ Clears a range of cell values in a spreadsheet.
 """
 function clear!(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
     v = get(client, range)
-    rng = v["range"]
-    vls = v["values"]
+    rng = v.range
+    vls = v.values
 
     if isnothing(values)
         throw(ErrorException("No data found: range=$range"))
     end
 
     vls .= ""
-    return update!(client, CellRange(range.spreadsheet, rng), vls)
+    return update!(client, CellRange(range.spreadsheet, rng.range), vls)
 end
 
 

@@ -1,5 +1,6 @@
 
 using Test, GoogleSheets
+using GoogleSheets: CellRangeValues
 
 client = sheets_client(AUTH_SPREADSHEET_READWRITE)
 
@@ -19,9 +20,12 @@ function init_test(;add_values::Bool=true)
         # Add values to the sheet
         result = update!(client, CellRange(spreadsheet, sheet), fill(11, 5, 5))
         result = get(client, CellRange(spreadsheet, sheet))
-        @test result == Dict{Any,Any}("range" => "$(sheet)!A1:Z1000", "values" => fill("11", 5, 5), "majorDimension" => "ROWS")
+        @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), fill("11", 5, 5), "ROWS")
     end
 end
+
+# Define struct equality.  The default equality uses === for comparisions.
+Base.:(==)(x::CellRangeValues, y::CellRangeValues) = x.range == y.range && x.values == y.values && x.major_dimension == y.major_dimension
 
 ################################################################################
 
@@ -29,18 +33,18 @@ init_test(add_values=false)
 
 # Get the empty sheet
 result = get(client, CellRange(spreadsheet, sheet))
-@test !haskey(result, "values")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), nothing, "ROWS")
 
 # Add values to the sheet
 result = update!(client, CellRange(spreadsheet, sheet), fill(11, 5, 5))
 result = get(client, CellRange(spreadsheet, sheet))
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:Z1000", "values" => fill("11", 5, 5), "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), fill("11", 5, 5), "ROWS")
 
 result = get(client, CellRanges(spreadsheet, ["$(sheet)!A1:B2", "$(sheet)!C2:D5"]))
-@test result == Dict{Any,Any}("spreadsheetId" => spreadsheet_id, "valueRanges" => Dict{Any,Any}[
-    Dict("range" => "$(sheet)!A1:B2", "values" => fill("11",2,2), "majorDimension" => "ROWS"),
-    Dict("range" => "$(sheet)!C2:D5", "values" => fill("11",4,2), "majorDimension" => "ROWS"),
-])
+@test result == [
+    CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:B2"), fill("11",2,2), "ROWS"),
+    CellRangeValues(CellRange(spreadsheet, "$(sheet)!C2:D5"), fill("11",4,2), "ROWS")
+]
 
 ################################################################################
 
@@ -49,7 +53,7 @@ init_test()
 # Add rows and columns to the sheet
 append!(client, spreadsheet, sheet, 1000, 3)
 result = get(client, CellRange(spreadsheet, sheet))
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:AC2000", "values" => fill("11", 5, 5), "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:AC2000"), fill("11", 5, 5), "ROWS")
 
 ################################################################################
 
@@ -59,13 +63,13 @@ init_test()
 insert_rows!(client, spreadsheet, sheet, 2, 3, false)
 result = get(client, CellRange(spreadsheet, sheet))
 values = [fill("11",5), fill("11",5), Any[], fill("11",5), fill("11",5), fill("11",5) ]
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:Z1001", "values" => values, "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1001"), values, "ROWS")
 
 # Delete rows
 delete_rows!(client, spreadsheet, sheet, 2, 3)
 result = get(client, CellRange(spreadsheet, sheet))
 values = fill("11", 5, 5)
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:Z1000", "values" => values, "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), values, "ROWS")
 
 ################################################################################
 
@@ -76,13 +80,13 @@ insert_cols!(client, spreadsheet, sheet, 2, 3, false)
 result = get(client, CellRange(spreadsheet, sheet))
 values = fill("11", 5, 6)
 values[:,3] .= ""
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:AA1000", "values" => values, "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:AA1000"), values, "ROWS")
 
 # Delete columns
 delete_cols!(client, spreadsheet, sheet, 2, 3)
 result = get(client, CellRange(spreadsheet, sheet))
 values = fill("11", 5, 5)
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:Z1000", "values" => values, "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), values, "ROWS")
 
 ################################################################################
 
@@ -92,11 +96,11 @@ clear!(client, CellRange(spreadsheet, "$(sheet)!B2:C3"))
 result = get(client, CellRange(spreadsheet, sheet))
 values = fill("11", 5, 5)
 values[2:3,2:3] .= ""
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:Z1000", "values" => values, "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), values, "ROWS")
 
 clear!(client, CellRange(spreadsheet, sheet))
 result = get(client, CellRange(spreadsheet, sheet))
-@test result == Dict{Any,Any}("range" => "$(sheet)!A1:Z1000", "majorDimension" => "ROWS")
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), nothing, "ROWS")
 
 ################################################################################
 
