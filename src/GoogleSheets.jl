@@ -138,10 +138,18 @@ end
 
 """
 Gets the credentials file needed to log into Google.
+The file is loaded from the GOOGLE_SHEETS_CREDENTIALS environment variable
+if it is present; otherwise, it is loaded from the configuration directory,
+which defaults to ~/.julia/config/google_sheets/.
+
 See the python quick start reference for a link to generate credentials.
 https://developers.google.com/sheets/api/quickstart/python
 """
 function credentials_file()::String
+    if haskey(ENV, "GOOGLE_SHEETS_CREDENTIALS")
+        return ENV["GOOGLE_SHEETS_CREDENTIALS"]
+    end
+
     file = "credentials.json"
     return joinpath(config_dir, file)
 end
@@ -372,8 +380,8 @@ function clear!(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
         throw(ErrorException("No data found: range=$range"))
     end
 
-    empty = fill("", size(vls))
-    return update!(client, CellRange(range.spreadsheet, rng), empty)
+    vls .= ""
+    return update!(client, CellRange(range.spreadsheet, rng), vls)
 end
 
 
