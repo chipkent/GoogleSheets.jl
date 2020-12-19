@@ -121,6 +121,39 @@ end
 
 
 """
+A range of cell values within a spreadsheet.
+"""
+struct CellRangeValues
+    """Range of cells within a spreadsheet."""
+    range::CellRange
+
+    """Values of cells within a spreadsheet."""
+    values
+
+    """Major dimension of the cell values."""
+    major_dimension::AbstractString
+end
+
+
+"""
+Summary of updated updated cells.
+"""
+struct UpdateSummary
+    """Range of cells within a spreadsheet."""
+    range::CellRange
+
+    """Number of updated columns."""
+    updated_columns::Int64
+
+    """Number of updated rows."""
+    updated_rows::Int64
+
+    """Number of updated cells."""
+    updated_cells::Int64
+end
+
+
+"""
 Maps authorization scopes to the appropriate permission URLs.
 """
 function _scope_urls(scopes::AuthScope)::Array{String,1}
@@ -138,10 +171,21 @@ end
 
 """
 Gets the credentials file needed to log into Google.
+The file is loaded from the GOOGLE_SHEETS_CREDENTIALS environment variable
+if it is present; otherwise, it is loaded from the configuration directory,
+which defaults to ~/.julia/config/google_sheets/.
+
 See the python quick start reference for a link to generate credentials.
 https://developers.google.com/sheets/api/quickstart/python
+
+See the API credentials page to create or revoke credentials.
+https://console.developers.google.com/apis/credentials
 """
 function credentials_file()::String
+    if haskey(ENV, "GOOGLE_SHEETS_CREDENTIALS")
+        return ENV["GOOGLE_SHEETS_CREDENTIALS"]
+    end
+
     file = "credentials.json"
     return joinpath(config_dir, file)
 end
@@ -304,13 +348,13 @@ end
 """
 Gets a range of cell values from a spreadsheet.
 """
-function Base.get(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
+function Base.get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
     @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
                                     majorDimension="ROWS",
                                     range=range.range).execute()
-        return result
+        return CellRangeValues(CellRange(range.spreadsheet, result["range"]), haskey(result, "values") ? result["values"] : nothing, result["majorDimension"])
     end
 end
 
@@ -318,13 +362,14 @@ end
 """
 Gets multiple ranges of cell values from a spreadsheet.
 """
-function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Dict{Any,Any}
+function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Vector{CellRangeValues}
     @_print_python_exception begin
         sheet = client.client.spreadsheets()
         result = sheet.values().batchGet(spreadsheetId=ranges.spreadsheet.id,
                                     majorDimension="ROWS",
                                     ranges=ranges.ranges).execute()
-        return result
+
+        return [CellRangeValues(CellRange(ranges.spreadsheet, r["range"]), haskey(r, "values") ? r["values"] : nothing, r["majorDimension"]) for r in result["valueRanges"] ]
     end
 end
 
@@ -340,7 +385,7 @@ Updates a range of cell values in a spreadsheet.
     inserted as a string.  false treats values exactly as if they were entered into
     the Google Sheets UI, for example "=A1+B1" is a formula.
 """
-function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::Dict{Any,Any}
+function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::UpdateSummary
     # There are serialization problems if the values are not Array{Any,2} or Array{String,2}
     values = Any[values[i,j] for i in 1:size(values,1), j in 1:size(values,2)]
 
@@ -355,7 +400,8 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
                                 range=range.range,
                                 valueInputOption= raw ? "RAW" : "USER_ENTERED",
                                 body=body).execute()
-        return result
+
+        return UpdateSummary(CellRange(range.spreadsheet, result["updatedRange"]), result["updatedColumns"], result["updatedRows"], result["updatedCells"])
     end
 end
 
@@ -363,17 +409,17 @@ end
 """
 Clears a range of cell values in a spreadsheet.
 """
-function clear!(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
+function clear!(client::GoogleSheetsClient, range::CellRange)::UpdateSummary
     v = get(client, range)
-    rng = v["range"]
-    vls = v["values"]
+    rng = v.range
+    vls = v.values
 
     if isnothing(values)
         throw(ErrorException("No data found: range=$range"))
     end
 
-    empty = fill("", size(vls))
-    return update!(client, CellRange(range.spreadsheet, rng), empty)
+    vls .= ""
+    return update!(client, CellRange(range.spreadsheet, rng.range), vls)
 end
 
 
@@ -642,9 +688,9 @@ function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
 end
 
 
-#TODO add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
-#TODO add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
-#TODO add basic formatting -> https://developers.google.com/sheets/api/samples/formatting
-#TODO add conditional formatting -> https://developers.google.com/sheets/api/samples/conditional-formatting  https://developers.google.com/sheets/api/guides/conditional-format
+#TODO: add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
+#TODO: add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
+#TODO: add basic formatting -> https://developers.google.com/sheets/api/samples/formatting
+#TODO: add conditional formatting -> https://developers.google.com/sheets/api/samples/conditional-formatting  https://developers.google.com/sheets/api/guides/conditional-format
 
 end # module
