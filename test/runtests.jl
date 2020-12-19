@@ -1,6 +1,6 @@
 
 using Test, GoogleSheets
-using GoogleSheets: CellRangeValues
+using GoogleSheets: CellRangeValues, UpdateSummary
 
 client = sheets_client(AUTH_SPREADSHEET_READWRITE)
 
@@ -19,6 +19,7 @@ function init_test(;add_values::Bool=true)
     if(add_values)
         # Add values to the sheet
         result = update!(client, CellRange(spreadsheet, sheet), fill(11, 5, 5))
+        @test result == UpdateSummary(CellRange(spreadsheet, "$(sheet)!A1:E5"), 5, 5, 25)
         result = get(client, CellRange(spreadsheet, sheet))
         @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), fill("11", 5, 5), "ROWS")
     end
@@ -37,6 +38,7 @@ result = get(client, CellRange(spreadsheet, sheet))
 
 # Add values to the sheet
 result = update!(client, CellRange(spreadsheet, sheet), fill(11, 5, 5))
+@test result == UpdateSummary(CellRange(spreadsheet, "$(sheet)!A1:E5"), 5, 5, 25)
 result = get(client, CellRange(spreadsheet, sheet))
 @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), fill("11", 5, 5), "ROWS")
 
@@ -92,13 +94,15 @@ values = fill("11", 5, 5)
 
 init_test()
 
-clear!(client, CellRange(spreadsheet, "$(sheet)!B2:C3"))
+result = clear!(client, CellRange(spreadsheet, "$(sheet)!B2:C3"))
+@test result == UpdateSummary(CellRange(spreadsheet, "$(sheet)!B2:C3"), 2, 2, 4)
 result = get(client, CellRange(spreadsheet, sheet))
 values = fill("11", 5, 5)
 values[2:3,2:3] .= ""
 @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), values, "ROWS")
 
-clear!(client, CellRange(spreadsheet, sheet))
+result = clear!(client, CellRange(spreadsheet, sheet))
+@test result == UpdateSummary(CellRange(spreadsheet, "$(sheet)!A1:E5"), 5, 5, 25)
 result = get(client, CellRange(spreadsheet, sheet))
 @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), nothing, "ROWS")
 

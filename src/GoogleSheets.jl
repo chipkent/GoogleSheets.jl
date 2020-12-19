@@ -136,6 +136,24 @@ end
 
 
 """
+Summary of updated updated cells.
+"""
+struct UpdateSummary
+    """Range of cells within a spreadsheet."""
+    range::CellRange
+
+    """Number of updated columns."""
+    updated_columns::Int64
+
+    """Number of updated rows."""
+    updated_rows::Int64
+
+    """Number of updated cells."""
+    updated_cells::Int64
+end
+
+
+"""
 Maps authorization scopes to the appropriate permission URLs.
 """
 function _scope_urls(scopes::AuthScope)::Array{String,1}
@@ -364,7 +382,7 @@ Updates a range of cell values in a spreadsheet.
     inserted as a string.  false treats values exactly as if they were entered into
     the Google Sheets UI, for example "=A1+B1" is a formula.
 """
-function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::Dict{Any,Any}
+function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:Any,2}; raw::Bool=false)::UpdateSummary
     # There are serialization problems if the values are not Array{Any,2} or Array{String,2}
     values = Any[values[i,j] for i in 1:size(values,1), j in 1:size(values,2)]
 
@@ -379,7 +397,8 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
                                 range=range.range,
                                 valueInputOption= raw ? "RAW" : "USER_ENTERED",
                                 body=body).execute()
-        return result
+
+        return UpdateSummary(CellRange(range.spreadsheet, result["updatedRange"]), result["updatedColumns"], result["updatedRows"], result["updatedCells"])
     end
 end
 
@@ -387,7 +406,7 @@ end
 """
 Clears a range of cell values in a spreadsheet.
 """
-function clear!(client::GoogleSheetsClient, range::CellRange)::Dict{Any,Any}
+function clear!(client::GoogleSheetsClient, range::CellRange)::UpdateSummary
     v = get(client, range)
     rng = v.range
     vls = v.values
