@@ -177,6 +177,9 @@ which defaults to ~/.julia/config/google_sheets/.
 
 See the python quick start reference for a link to generate credentials.
 https://developers.google.com/sheets/api/quickstart/python
+
+See the API credentials page to create or revoke credentials.
+https://console.developers.google.com/apis/credentials
 """
 function credentials_file()::String
     if haskey(ENV, "GOOGLE_SHEETS_CREDENTIALS")

@@ -4,7 +4,7 @@ using GoogleSheets: CellRangeValues, UpdateSummary
 
 client = sheets_client(AUTH_SPREADSHEET_READWRITE)
 
-spreadsheet_id = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"  #TODO ENV[***]
+spreadsheet_id = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
 spreadsheet = Spreadsheet(spreadsheet_id)
 sheet = "TestSheet"
 
