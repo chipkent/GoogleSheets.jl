@@ -110,7 +110,6 @@ result = get(client, CellRange(spreadsheet, sheet))
 
 init_test()
 
-# just make sure these don't exception
 freeze!(client, spreadsheet, sheet, 2, 3)
 
 m = meta(client, spreadsheet)
@@ -119,11 +118,15 @@ show(client, spreadsheet)
 
 m = meta(client, spreadsheet, sheet)
 @test sheet == m["title"]
+@test 2 == m["gridProperties"]["frozenRowCount"]
+@test 3 == m["gridProperties"]["frozenColumnCount"]
 show(client, spreadsheet, sheet)
 
 sheet_id = m["sheetId"]
 m = meta(client, spreadsheet, sheet_id)
 @test sheet == m["title"]
+@test 2 == m["gridProperties"]["frozenRowCount"]
+@test 3 == m["gridProperties"]["frozenColumnCount"]
 show(client, spreadsheet, sheet_id)
 
 ################################################################################
