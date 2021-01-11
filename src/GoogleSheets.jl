@@ -128,7 +128,7 @@ struct CellRangeValues
     range::CellRange
 
     """Values of cells within a spreadsheet."""
-    values
+    values::Union{Nothing,Array{String,2}}
 
     """Major dimension of the cell values."""
     major_dimension::AbstractString
@@ -346,6 +346,30 @@ end
 
 
 """
+Converts sheet values to a string matrix.
+"""
+function _matrix(inputs::Array{String,2})::Array{String,2}
+    return inputs
+end
+
+
+"""
+Converts sheet values to a string matrix.
+"""
+function _matrix(inputs)::Array{String,2}
+    m = fill("", length(inputs), mapreduce(length, max, inputs))
+
+    for (i,r) in enumerate(inputs)
+        for (j,v) in enumerate(r)
+            m[i,j] = v
+        end
+    end
+
+    return m
+end
+
+
+"""
 Gets a range of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
@@ -354,7 +378,7 @@ function Base.get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
         result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
                                     majorDimension="ROWS",
                                     range=range.range).execute()
-        return CellRangeValues(CellRange(range.spreadsheet, result["range"]), haskey(result, "values") ? result["values"] : nothing, result["majorDimension"])
+        return CellRangeValues(CellRange(range.spreadsheet, result["range"]), haskey(result, "values") ? _matrix(result["values"]) : nothing, result["majorDimension"])
     end
 end
 
@@ -369,7 +393,7 @@ function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Vector{CellRa
                                     majorDimension="ROWS",
                                     ranges=ranges.ranges).execute()
 
-        return [CellRangeValues(CellRange(ranges.spreadsheet, r["range"]), haskey(r, "values") ? r["values"] : nothing, r["majorDimension"]) for r in result["valueRanges"] ]
+        return [CellRangeValues(CellRange(ranges.spreadsheet, r["range"]), haskey(r, "values") ? _matrix(r["values"]) : nothing, r["majorDimension"]) for r in result["valueRanges"] ]
     end
 end
 
