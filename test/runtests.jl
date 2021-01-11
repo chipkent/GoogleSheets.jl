@@ -64,7 +64,8 @@ init_test()
 # Insert rows
 insert_rows!(client, spreadsheet, sheet, 2, 3, false)
 result = get(client, CellRange(spreadsheet, sheet))
-values = [fill("11",5), fill("11",5), Any[], fill("11",5), fill("11",5), fill("11",5) ]
+values = fill("11", 6, 5)
+values[3,:] .= ""
 @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1001"), values, "ROWS")
 
 # Delete rows
