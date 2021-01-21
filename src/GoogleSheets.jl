@@ -16,8 +16,9 @@ module GoogleSheets
 using PyCall
 using JSON
 import MacroTools
+import DataFrames: DataFrame, nrow, ncol, names
 
-export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, sheets_client, meta, show, get, update!,
+export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
         delete_rows!, delete_cols!
 
@@ -134,6 +135,12 @@ struct CellRangeValues
     major_dimension::AbstractString
 end
 
+
+"""
+Creates a DataFrame from spreadsheet range values.  The first row is converted to column names.  All other rows are converted to string values.
+"""
+DataFrame(values::CellRangeValues)::Union{Nothing,DataFrame} = values.values == nothing ? nothing : DataFrame([values.values[1,i]=>values.values[2:end,i] for i in 1:size(values.values,2)]...)
+ 
 
 """
 Summary of updated updated cells.
@@ -427,6 +434,35 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
 
         return UpdateSummary(CellRange(range.spreadsheet, result["updatedRange"]), result["updatedColumns"], result["updatedRows"], result["updatedCells"])
     end
+end
+
+
+"""
+Updates a range of cell values in a spreadsheet.
+
+# Arguments
+- `client::GoogleSheetsClient`: client for interacting with Google Sheets.
+- `range::CellRange`: cell range to modify.
+- `df::DataFrame`: dataframe of values.
+- `kwargs...`: keyword arguments.
+"""
+function update!(client::GoogleSheetsClient, range::CellRange, df::DataFrame; kwargs...)::UpdateSummary
+
+    function df_to_string(df::DataFrame)::Matrix{String}
+        rst = fill("", nrow(df)+1, ncol(df))
+    
+        for (j,n) in enumerate(names(df))
+            rst[1, j] = n
+        end
+    
+        for i in 1:nrow(df), j in 1:ncol(df)
+            rst[i+1,j] = "$(df[i,j])"
+        end
+    
+        return rst
+    end
+
+    return update!(client, range, df_to_string(df); kwargs...)
 end
 
 
