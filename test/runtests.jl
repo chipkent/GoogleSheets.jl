@@ -30,6 +30,28 @@ Base.:(==)(x::CellRangeValues, y::CellRangeValues) = x.range == y.range && x.val
 
 ################################################################################
 
+values = ["A" "B" "C"; "1" "2" "3"; "4" "5" "6"]
+crv = CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:"), values, "TEST_DIM")
+df = DataFrame(crv)
+@test df == DataFrame(A= ["1", "4"], B=["2","5"], C=["3","6"])
+
+################################################################################
+
+init_test(add_values=false)
+
+# Get the empty sheet
+result = get(client, CellRange(spreadsheet, sheet))
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), nothing, "ROWS")
+
+# Add values to the sheet
+df = DataFrame(A=[1,2], B=["X","Y"])
+result = update!(client, CellRange(spreadsheet, sheet), df)
+@test result == UpdateSummary(CellRange(spreadsheet, "$(sheet)!A1:B3"), 2, 3, 6)
+result = get(client, CellRange(spreadsheet, sheet))
+@test result == CellRangeValues(CellRange(spreadsheet, "$(sheet)!A1:Z1000"), ["A" "B"; "1" "X"; "2" "Y"], "ROWS")
+
+################################################################################
+
 init_test(add_values=false)
 
 # Get the empty sheet
