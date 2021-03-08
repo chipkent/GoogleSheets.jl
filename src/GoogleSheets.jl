@@ -18,7 +18,7 @@ using JSON
 import MacroTools
 import DataFrames: DataFrame, nrow, ncol, names
 
-export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, get, update!,
+export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, sheet_names, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
         delete_rows!, delete_cols!
 
@@ -349,6 +349,15 @@ function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_i
     m = meta(client, spreadsheet, sheet_id)
     println("Sheet:")
     println(json(m, 4))
+end
+
+
+"""
+Gets the names of the sheets in the spreadsheet.
+"""
+function sheet_names(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{String}
+    m = meta(client, spreadsheet)
+    return [ s["properties"]["title"] for s in m["sheets"] ]
 end
 
 
