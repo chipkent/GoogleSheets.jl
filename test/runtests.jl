@@ -15,6 +15,7 @@ function init_test(;add_values::Bool=true)
     end
     
     add_sheet!(client, spreadsheet, sheet)
+    @test ["Sheet1", "TestSheet"] == sheet_names(client,spreadsheet)
 
     if(add_values)
         # Add values to the sheet

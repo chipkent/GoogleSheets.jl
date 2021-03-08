@@ -6,6 +6,7 @@ Key functions:
 * sheets_client
 * meta
 * show
+* sheet_names
 * add_sheet!
 * delete_sheet!
 * insert_rows!
