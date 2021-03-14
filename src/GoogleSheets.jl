@@ -20,7 +20,7 @@ import DataFrames: DataFrame, nrow, ncol, names
 
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, sheet_names, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
-        delete_rows!, delete_cols!, format_number!, format_datetime!
+        delete_rows!, delete_cols!, format_number!, format_datetime!, format_background_color!
 
 
 """
@@ -824,6 +824,58 @@ function _format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, s
                     ),
 
                     "fields" => "userEnteredFormat.numberFormat",
+                ),
+            ),
+        ],
+    )
+
+    return batch_update!(client, spreadsheet, body)
+end
+
+"""
+Sets the background color.  Red, green, blue, and alpha must be in the [0,1] range.
+
+See: https://developers.google.com/sheets/api/guides/formats
+"""
+function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, red::Float64, green::Float64, blue::Float64, alpha::Float64)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return format_background_color!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, red, green, blue, alpha)
+end
+
+"""
+Sets the background color.  Red, green, blue, and alpha must be in the [0,1] range.
+
+See: https://developers.google.com/sheets/api/guides/formats
+"""
+function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, red::Float64, green::Float64, blue::Float64, alpha::Float64)::Dict{Any,Any}
+    if red < 0 || 1 < red || green < 0 || 1 < green || blue < 0 || 1 < blue || alpha < 0 || 1 < alpha
+        error("Color value out of range: red=$(red) green=$(green) blue=$(blue) alpha=$(alpha)")
+    end
+
+    body = Dict(
+        "requests" => [
+            Dict(
+                "repeatCell" => Dict(
+                    "range" => Dict(
+                        "sheetId" => sheet_id,
+                        "startRowIndex" => start_row_index,
+                        "endRowIndex" => end_row_index,
+                        "startColumnIndex" => start_col_index,
+                        "endColumnIndex" => end_col_index,
+                    ),
+
+                    "cell" => Dict(
+                        "userEnteredFormat" => Dict(
+                            "backgroundColor" => Dict(
+                                "red" => red,
+                                "green" => green,
+                                "blue" => blue,
+                                "alpha" => alpha,
+                            ),
+                        ),
+                    ),
+
+                    "fields" => "userEnteredFormat.backgroundColor",
                 ),
             ),
         ],
