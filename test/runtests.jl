@@ -154,3 +154,10 @@ m = meta(client, spreadsheet, sheet_id)
 show(client, spreadsheet, sheet_id)
 
 ################################################################################
+
+init_test()
+
+format_number!(client, spreadsheet, sheet, 2, 3, 1, 2, "0.0")
+format_datetime!(client, spreadsheet, sheet, 4, 5, 1, 2, "hh:mm:ss am/pm, ddd mmm dd yyyy")
+
+################################################################################

@@ -20,7 +20,7 @@ import DataFrames: DataFrame, nrow, ncol, names
 
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, sheet_names, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
-        delete_rows!, delete_cols!
+        delete_rows!, delete_cols!, format_number!, format_datetime!
 
 
 """
@@ -756,6 +756,81 @@ function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
     return batch_update!(client, spreadsheet, body)
 end
 
+"""
+Formats number values.
+
+See: https://developers.google.com/sheets/api/guides/formats
+"""
+function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return format_number!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, format_pattern)
+end
+
+
+"""
+Formats number values.
+
+See: https://developers.google.com/sheets/api/guides/formats
+"""
+function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+    return _format_number!(client, spreadsheet, sheet_id, start_row_index, end_row_index, start_col_index, end_col_index, "NUMBER", format_pattern)
+end
+
+"""
+Formats date-time values.
+
+See: https://developers.google.com/sheets/api/guides/formats
+"""
+function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+    properties = meta(client, spreadsheet, title)
+    return format_datetime!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, format_pattern)
+end
+
+
+"""
+Formats date-time values.
+
+See: https://developers.google.com/sheets/api/guides/formats
+"""
+function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+    return _format_number!(client, spreadsheet, sheet_id, start_row_index, end_row_index, start_col_index, end_col_index, "DATE", format_pattern)
+end
+
+"""
+Formats number values.
+
+See: https://developers.google.com/sheets/api/guides/formats
+"""
+function _format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_type::AbstractString, format_pattern::AbstractString)::Dict{Any,Any}
+    body = Dict(
+        "requests" => [
+            Dict(
+                "repeatCell" => Dict(
+                    "range" => Dict(
+                        "sheetId" => sheet_id,
+                        "startRowIndex" => start_row_index,
+                        "endRowIndex" => end_row_index,
+                        "startColumnIndex" => start_col_index,
+                        "endColumnIndex" => end_col_index,
+                    ),
+
+                    "cell" => Dict(
+                        "userEnteredFormat" => Dict(
+                            "numberFormat" => Dict(
+                                "type" => format_type,
+                                "pattern" => format_pattern,
+                            ),
+                        ),
+                    ),
+
+                    "fields" => "userEnteredFormat.numberFormat",
+                ),
+            ),
+        ],
+    )
+
+    return batch_update!(client, spreadsheet, body)
+end
 
 #TODO: add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
 #TODO: add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
