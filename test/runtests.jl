@@ -86,7 +86,7 @@ result = get(client, CellRange(spreadsheet, sheet))
 init_test()
 
 # Insert rows
-insert_rows!(client, spreadsheet, sheet, 2, 3, false)
+insert_rows!(client, spreadsheet, sheet, 2, 3)
 result = get(client, CellRange(spreadsheet, sheet))
 values = fill("11", 6, 5)
 values[3,:] .= ""
@@ -103,7 +103,7 @@ values = fill("11", 5, 5)
 init_test()
 
 # Insert columns
-insert_cols!(client, spreadsheet, sheet, 2, 3, false)
+insert_cols!(client, spreadsheet, sheet, 2, 3)
 result = get(client, CellRange(spreadsheet, sheet))
 values = fill("11", 5, 6)
 values[:,3] .= ""

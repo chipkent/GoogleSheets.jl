@@ -536,6 +536,33 @@ end
 
 
 """
+Returns a dictionary of values to describe a 1D range of cells in a sheet.
+"""
+function cellRange1D(sheet_id::Int64, dim::AbstractString, start_index::Integer, end_index::Integer)
+    return Dict(
+        "sheetId" => sheet_id,
+        "dimension" => dim,
+        "startIndex" => start_index,
+        "endIndex" => end_index,
+    )
+end
+
+
+"""
+Returns a dictionary of values to describe a 2D range of cells in a sheet.
+"""
+function cellRange2D(sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer)
+    return Dict(
+            "sheetId" => sheet_id,
+            "startRowIndex" => start_row_index,
+            "endRowIndex" => end_row_index+1,
+            "startColumnIndex" => start_col_index,
+            "endColumnIndex" => end_col_index+1,
+        )
+end
+
+
+"""
 Removes a sheet from a spreadsheet.
 """
 function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
@@ -647,51 +674,46 @@ end
 """
 Insert rows into to a sheet.
 """
-function insert_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+function insert_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
-    return insert_rows!(client, spreadsheet, properties["sheetId"], start_index, end_index, inherit_from_before)
+    return insert_rows!(client, spreadsheet, properties["sheetId"], start_index, end_index)
 end
 
 
 """
 Insert rows into to a sheet.
 """
-function insert_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
-    return _insert!(client, spreadsheet, sheet_id, "ROWS", start_index, end_index, inherit_from_before)
+function insert_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Integer, end_index::Integer)::Dict{Any,Any}
+    return _insert!(client, spreadsheet, sheet_id, "ROWS", start_index, end_index)
 end
 
 
 """
 Insert columns into to a sheet.
 """
-function insert_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+function insert_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
-    return insert_cols!(client, spreadsheet, properties["sheetId"], start_index, end_index, inherit_from_before)
+    return insert_cols!(client, spreadsheet, properties["sheetId"], start_index, end_index)
 end
 
 
 """
 Insert columns into to a sheet.
 """
-function insert_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
-    return _insert!(client, spreadsheet, sheet_id, "COLUMNS", start_index, end_index, inherit_from_before)
+function insert_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Integer, end_index::Integer)::Dict{Any,Any}
+    return _insert!(client, spreadsheet, sheet_id, "COLUMNS", start_index, end_index)
 end
 
 
 """
 Insert rows or columns into to a sheet.
 """
-function _insert!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, dim::AbstractString, start_index::Int64, end_index::Int64, inherit_from_before::Bool)::Dict{Any,Any}
+function _insert!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, dim::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
                 "insertDimension" => Dict(
-                    "range" => Dict(
-                        "sheetId" => sheet_id,
-                        "dimension" => dim,
-                        "startIndex" => start_index,
-                        "endIndex" => end_index,
-                    ),
+                    "range" => cellRange1D(sheet_id, dim, start_index, end_index),
                 ),
             ),
         ],
@@ -704,7 +726,7 @@ end
 """
 Delete rows from a sheet.
 """
-function delete_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+function delete_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
     return delete_rows!(client, spreadsheet, properties["sheetId"], start_index, end_index)
 end
@@ -713,7 +735,7 @@ end
 """
 Delete rows from a sheet.
 """
-function delete_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+function delete_rows!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     return _delete!(client, spreadsheet, sheet_id, "ROWS", start_index, end_index)
 end
 
@@ -721,7 +743,7 @@ end
 """
 Delete columns from a sheet.
 """
-function delete_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+function delete_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
     return delete_cols!(client, spreadsheet, properties["sheetId"], start_index, end_index)
 end
@@ -730,7 +752,7 @@ end
 """
 Delete columns from a sheet.
 """
-function delete_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+function delete_cols!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     return _delete!(client, spreadsheet, sheet_id, "COLUMNS", start_index, end_index)
 end
 
@@ -738,17 +760,12 @@ end
 """
 Delete rows or columns from a sheet.
 """
-function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, dim::AbstractString, start_index::Int64, end_index::Int64)::Dict{Any,Any}
+function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, dim::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
                 "deleteDimension" => Dict(
-                    "range" => Dict(
-                        "sheetId" => sheet_id,
-                        "dimension" => dim,
-                        "startIndex" => start_index,
-                        "endIndex" => end_index,
-                    ),
+                    "range" => cellRange1D(sheet_id, dim, start_index, end_index),
                 ),
             ),
         ],
@@ -757,12 +774,13 @@ function _delete!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id
     return batch_update!(client, spreadsheet, body)
 end
 
+
 """
 Formats number values.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
     return format_number!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, format_pattern)
 end
@@ -773,16 +791,17 @@ Formats number values.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
     return _format_number!(client, spreadsheet, sheet_id, start_row_index, end_row_index, start_col_index, end_col_index, "NUMBER", format_pattern)
 end
+
 
 """
 Formats date-time values.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
     return format_datetime!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, format_pattern)
 end
@@ -793,27 +812,22 @@ Formats date-time values.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_pattern::AbstractString)::Dict{Any,Any}
+function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
     return _format_number!(client, spreadsheet, sheet_id, start_row_index, end_row_index, start_col_index, end_col_index, "DATE", format_pattern)
 end
+
 
 """
 Formats number values.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function _format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, format_type::AbstractString, format_pattern::AbstractString)::Dict{Any,Any}
+function _format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_type::AbstractString, format_pattern::AbstractString)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
                 "repeatCell" => Dict(
-                    "range" => Dict(
-                        "sheetId" => sheet_id,
-                        "startRowIndex" => start_row_index,
-                        "endRowIndex" => end_row_index,
-                        "startColumnIndex" => start_col_index,
-                        "endColumnIndex" => end_col_index,
-                    ),
+                    "range" => cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index),
 
                     "cell" => Dict(
                         "userEnteredFormat" => Dict(
@@ -833,35 +847,31 @@ function _format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, s
     return batch_update!(client, spreadsheet, body)
 end
 
+
 """
 Sets the background color.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, color::Colorant)::Dict{Any,Any}
+function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, color::Colorant)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
     return format_background_color!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, color)
 end
 
+
 """
 Sets the background color.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, color::Colorant)::Dict{Any,Any}
+function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, color::Colorant)::Dict{Any,Any}
     c = convert(RGBA, color)
 
     body = Dict(
         "requests" => [
             Dict(
                 "repeatCell" => Dict(
-                    "range" => Dict(
-                        "sheetId" => sheet_id,
-                        "startRowIndex" => start_row_index,
-                        "endRowIndex" => end_row_index,
-                        "startColumnIndex" => start_col_index,
-                        "endColumnIndex" => end_col_index,
-                    ),
+                    "range" => cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index),
 
                     "cell" => Dict(
                         "userEnteredFormat" => Dict(
