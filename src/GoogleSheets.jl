@@ -17,6 +17,7 @@ using PyCall
 using JSON
 import MacroTools
 import DataFrames: DataFrame, nrow, ncol, names
+import ColorTypes: Colorant, RGBA, red, green, blue, alpha
 
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, sheet_names, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
@@ -833,24 +834,22 @@ function _format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, s
 end
 
 """
-Sets the background color.  Red, green, blue, and alpha must be in the [0,1] range.
+Sets the background color.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, red::Float64, green::Float64, blue::Float64, alpha::Float64)::Dict{Any,Any}
+function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, color::Colorant)::Dict{Any,Any}
     properties = meta(client, spreadsheet, title)
-    return format_background_color!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, red, green, blue, alpha)
+    return format_background_color!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, color)
 end
 
 """
-Sets the background color.  Red, green, blue, and alpha must be in the [0,1] range.
+Sets the background color.
 
 See: https://developers.google.com/sheets/api/guides/formats
 """
-function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, red::Float64, green::Float64, blue::Float64, alpha::Float64)::Dict{Any,Any}
-    if red < 0 || 1 < red || green < 0 || 1 < green || blue < 0 || 1 < blue || alpha < 0 || 1 < alpha
-        error("Color value out of range: red=$(red) green=$(green) blue=$(blue) alpha=$(alpha)")
-    end
+function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Int64, end_row_index::Int64, start_col_index::Int64, end_col_index::Int64, color::Colorant)::Dict{Any,Any}
+    c = convert(RGBA, color)
 
     body = Dict(
         "requests" => [
@@ -867,10 +866,10 @@ function format_background_color!(client::GoogleSheetsClient, spreadsheet::Sprea
                     "cell" => Dict(
                         "userEnteredFormat" => Dict(
                             "backgroundColor" => Dict(
-                                "red" => red,
-                                "green" => green,
-                                "blue" => blue,
-                                "alpha" => alpha,
+                                "red" => red(c),
+                                "green" => green(c),
+                                "blue" => blue(c),
+                                "alpha" => alpha(c),
                             ),
                         ),
                     ),

@@ -1,9 +1,10 @@
 name = "GoogleSheets"
 uuid = "831f653e-6dbc-49a2-ac93-eebfaa09c6e6"
 authors = ["David R. (Chip) Kent IV <chipkent@cecropiacapital.com>"]
-version = "1.2.2"
+version = "1.2.3"
 
 [deps]
+ColorTypes = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
