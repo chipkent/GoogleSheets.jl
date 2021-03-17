@@ -925,7 +925,8 @@ function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadshee
 
     properties = meta(client, spreadsheet, title)
     return format_color_scale!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index; 
-        min_color, min_value_type, min_value, mid_color, mid_value_type, mid_value, max_color, max_value_type, max_value)
+        min_color=min_color, min_value_type=min_value_type, min_value=min_value, mid_color=mid_color, mid_value_type=mid_value_type, mid_value=mid_value, 
+        max_color=max_color, max_value_type=max_value_type, max_value=max_value)
 end
 
 
@@ -977,7 +978,7 @@ function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadshee
         )
 
         if !isnothing(mid_color)
-            rst["midpoint"] = point(mid_color, value_type_mid, min_value)
+            rst["midpoint"] = point(mid_color, value_type_mid, mid_value)
         end
 
         return rst
