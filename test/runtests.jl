@@ -2,6 +2,7 @@
 using Test, GoogleSheets
 using GoogleSheets: CellRangeValues, UpdateSummary
 using ColorTypes
+using Colors
 
 client = sheets_client(AUTH_SPREADSHEET_READWRITE)
 
@@ -163,5 +164,7 @@ format_datetime!(client, spreadsheet, sheet, 4, 5, 1, 2, "hh:mm:ss am/pm, ddd mm
 format_background_color!(client, spreadsheet, sheet, 4, 5, 1, 2, RGBA(0.5, 0.5, 0.5, 0.8))
 format_background_color!(client, spreadsheet, sheet, 4, 5, 1, 2, RGB(0.5, 0.5, 0.5))
 format_background_color!(client, spreadsheet, sheet, 4, 5, 1, 2, Gray(0.5))
+format_color_scale!(client, spreadsheet, sheet, 4, 5, 1, 2)
+format_color_scale!(client, spreadsheet, sheet, 4, 5, 1, 2; min_value_type=VALUE_TYPE_NUMBER, min_value=-3, max_value_type=VALUE_TYPE_NUMBER, max_value=3, mid_color=colorant"white", mid_value_type=VALUE_TYPE_NUMBER, mid_value=0)
 
 ################################################################################
