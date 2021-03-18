@@ -21,8 +21,9 @@ import ColorTypes: Colorant, RGBA, red, green, blue, alpha
 using Colors
 
 include("enums.jl")
+include("types.jl")
 
-export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, sheet_names, get, update!,
+export DataFrame, sheets_client, meta, show, sheet_names, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
         delete_rows!, delete_cols!, format_number!, format_datetime!, format_background_color!, format_color_scale!
 
@@ -64,84 +65,10 @@ const _permission_urls = Dict(
 
 
 """
-A Google Sheets client.
-"""
-struct GoogleSheetsClient
-    client
-end
-
-
-"""
-A spreadsheet.
-"""
-struct Spreadsheet
-    """Spreadsheet unique identifier."""
-    id::AbstractString
-end
-
-
-"""
-A range of cells within a spreadsheet.
-"""
-struct CellRange
-    """Spreadsheet containing the cells."""
-    spreadsheet::Spreadsheet
-
-    """Range of cells."""
-    range::AbstractString
-end
-
-
-"""
-Multiple ranges of cells within a spreadsheet.
-"""
-struct CellRanges{T<:AbstractString}
-    """Spreadsheet containing the cells."""
-    spreadsheet::Spreadsheet
-
-    """Ranges of cells."""
-    ranges::Array{T,1}
-end
-
-
-"""
-A range of cell values within a spreadsheet.
-"""
-struct CellRangeValues
-    """Range of cells within a spreadsheet."""
-    range::CellRange
-
-    """Values of cells within a spreadsheet."""
-    values::Union{Nothing,Array{String,2}}
-
-    """Major dimension of the cell values."""
-    major_dimension::AbstractString
-end
-
-
-"""
 Creates a DataFrame from spreadsheet range values.  The first row is converted to column names.  All other rows are converted to string values.
 """
 DataFrame(values::CellRangeValues)::Union{Nothing,DataFrame} = values.values == nothing ? nothing : DataFrame([values.values[1,i]=>values.values[2:end,i] for i in 1:size(values.values,2)]...)
  
-
-"""
-Summary of updated updated cells.
-"""
-struct UpdateSummary
-    """Range of cells within a spreadsheet."""
-    range::CellRange
-
-    """Number of updated columns."""
-    updated_columns::Int64
-
-    """Number of updated rows."""
-    updated_rows::Int64
-
-    """Number of updated cells."""
-    updated_cells::Int64
-end
-
 
 """
 Maps authorization scopes to the appropriate permission URLs.
