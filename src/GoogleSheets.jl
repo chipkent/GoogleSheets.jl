@@ -47,17 +47,21 @@ end
 
 include("enums.jl")
 include("types.jl")
+include("json.jl")
 include("client.jl")
 include("spreadsheet.jl")
 include("sheet.jl")
 include("meta.jl")
 include("io.jl")
+include("format.jl")
+include("format_conditional.jl")
 
-export format_number!, format_datetime!, format_background_color!, format_color_scale!
 
+#TODO: ******** next work is to figure out how to handle sheet names / ids as well as the ranges.
 
 #TODO: cell range stuff is used in sheet.
 
+#TODO: rename to gsheet_json and move to json.jl
 """
 Returns a dictionary of values to describe a 1D range of cells in a sheet.
 """
@@ -71,6 +75,7 @@ function cellRange1D(sheet_id::Int64, dim::AbstractString, start_index::Integer,
 end
 
 
+#TODO: rename to gsheet_json and move to json.jl
 """
 Returns a dictionary of values to describe a 2D range of cells in a sheet.
 """
@@ -84,305 +89,6 @@ function cellRange2D(sheet_id::Int64, start_row_index::Integer, end_row_index::I
         )
 end
 
-
-"""
-Returns a dictionary of values to describe a color.
-"""
-function colorEntry(color::Colorant)
-    c = convert(RGBA, color)
-    return Dict(
-            "red" => red(c),
-            "green" => green(c),
-            "blue" => blue(c),
-            "alpha" => alpha(c),
-        )
-end
-
-
-
-
-"""
-Formats number values.
-
-See: https://developers.google.com/sheets/api/guides/formats
-"""
-function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
-     #TODO: get rid of this stuff???
-     properties = meta(client, spreadsheet, title)
-    return format_number!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, format_pattern)
-end
-
-
-"""
-Formats number values.
-
-See: https://developers.google.com/sheets/api/guides/formats
-"""
-function format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
-    return _format_number!(client, spreadsheet, sheet_id, start_row_index, end_row_index, start_col_index, end_col_index, "NUMBER", format_pattern)
-end
-
-
-"""
-Formats date-time values.
-
-See: https://developers.google.com/sheets/api/guides/formats
-"""
-function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
-     #TODO: get rid of this stuff???
-     properties = meta(client, spreadsheet, title)
-    return format_datetime!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, format_pattern)
-end
-
-
-"""
-Formats date-time values.
-
-See: https://developers.google.com/sheets/api/guides/formats
-"""
-function format_datetime!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_pattern::AbstractString)::Dict{Any,Any}
-    return _format_number!(client, spreadsheet, sheet_id, start_row_index, end_row_index, start_col_index, end_col_index, "DATE", format_pattern)
-end
-
-
-"""
-Formats number values.
-
-See: https://developers.google.com/sheets/api/guides/formats
-"""
-function _format_number!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, format_type::AbstractString, format_pattern::AbstractString)::Dict{Any,Any}
-    body = Dict(
-        "requests" => [
-            Dict(
-                "repeatCell" => Dict(
-                    "range" => cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index),
-
-                    "cell" => Dict(
-                        "userEnteredFormat" => Dict(
-                            "numberFormat" => Dict(
-                                "type" => format_type,
-                                "pattern" => format_pattern,
-                            ),
-                        ),
-                    ),
-
-                    "fields" => "userEnteredFormat.numberFormat",
-                ),
-            ),
-        ],
-    )
-
-    return batch_update!(client, spreadsheet, body)
-end
-
-
-"""
-Sets the background color.
-
-See: https://developers.google.com/sheets/api/guides/formats
-"""
-function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, color::Colorant)::Dict{Any,Any}
-    #TODO: get rid of this stuff???
-    properties = meta(client, spreadsheet, title)
-    return format_background_color!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index, color)
-end
-
-
-"""
-Sets the background color.
-
-See: https://developers.google.com/sheets/api/guides/formats
-"""
-function format_background_color!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, color::Colorant)::Dict{Any,Any}
-    body = Dict(
-        "requests" => [
-            Dict(
-                "repeatCell" => Dict(
-                    "range" => cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index),
-
-                    "cell" => Dict(
-                        "userEnteredFormat" => Dict(
-                            "backgroundColor" => colorEntry(color),
-                        ),
-                    ),
-
-                    "fields" => "userEnteredFormat.backgroundColor",
-                ),
-            ),
-        ],
-    )
-
-    return batch_update!(client, spreadsheet, body)
-end
-
-
-"""
-Sets color scale formatting.
-"""
-function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, 
-    start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer; 
-    min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
-    mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
-    max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
-
-    properties = meta(client, spreadsheet, title)
-    return format_color_scale!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index; 
-        min_color=min_color, min_value_type=min_value_type, min_value=min_value, mid_color=mid_color, mid_value_type=mid_value_type, mid_value=mid_value, 
-        max_color=max_color, max_value_type=max_value_type, max_value=max_value)
-end
-
-
-"""
-Sets color scale formatting.
-"""
-function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, 
-    start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer; 
-    min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
-    mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
-    max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
- 
-    function point(color, type, value)
-        rst = Dict{Any,Any}(
-                "color" => colorEntry(color),
-        )
-
-        if !isnothing(type)
-            rst["type"] = type
-        end
-
-        if !isnothing(value)
-            rst["value"] = "$value"
-        end
-
-        return rst
-    end
-
-    function value_type(x)
-        d = Dict(
-            VALUE_TYPE_MIN => "MIN",
-            VALUE_TYPE_MAX => "MAX",
-            VALUE_TYPE_NUMBER => "NUMBER", 
-            VALUE_TYPE_PERCENT => "PERCENT",
-            VALUE_TYPE_PERCENTILE => "PERCENTILE",
-        )
-
-        return isnothing(x) ? nothing : d[x]
-    end
-
-    function gradientRule()
-        value_type_min = value_type(min_value_type)
-        value_type_max = value_type(max_value_type)
-        value_type_mid = value_type(mid_value_type)
-
-        rst = Dict(
-                "minpoint" => point(min_color, value_type_min, min_value),
-                "maxpoint" => point(max_color, value_type_max, max_value),
-        )
-
-        if !isnothing(mid_color)
-            rst["midpoint"] = point(mid_color, value_type_mid, mid_value)
-        end
-
-        return rst
-    end
-
-    body = Dict(
-        "requests" => [
-            Dict(
-                "addConditionalFormatRule" => Dict(
-                    "rule" => Dict(
-                        "ranges" => [cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index)],
-                        "gradientRule" => gradientRule(),
-                    ),
-                ),
-            ),
-        ],
-    )
-
-    return batch_update!(client, spreadsheet, body)
-end
-
-# *****
-
-
-# """
-# Sets color scale formatting.
-# """
-# function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, 
-#     start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer; 
-#     min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
-#     mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
-#     max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
-
-#     properties = meta(client, spreadsheet, title)
-#     return format_color_scale!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index; 
-#         min_color=min_color, min_value_type=min_value_type, min_value=min_value, mid_color=mid_color, mid_value_type=mid_value_type, mid_value=mid_value, 
-#         max_color=max_color, max_value_type=max_value_type, max_value=max_value)
-# end
-
-
-# """
-# Sets color scale formatting.
-# """
-# function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, 
-#     start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, color::Colorant, values::Array; 
-#     *****
-#     min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
-#     mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
-#     max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
- 
-#     # function point(color, type, value)
-#     #     rst = Dict{Any,Any}(
-#     #             "color" => colorEntry(color),
-#     #     )
-
-#     #     if !isnothing(type)
-#     #         rst["type"] = type
-#     #     end
-
-#     #     if !isnothing(value)
-#     #         rst["value"] = "$value"
-#     #     end
-
-#     #     return rst
-#     # end
-
-#     #TODO: remove ******************************************
-#     function value_type(x)
-#         d = Dict(
-#             VALUE_TYPE_MIN => "MIN",
-#             VALUE_TYPE_MAX => "MAX",
-#             VALUE_TYPE_NUMBER => "NUMBER", 
-#             VALUE_TYPE_PERCENT => "PERCENT",
-#             VALUE_TYPE_PERCENTILE => "PERCENTILE",
-#         )
-
-#         return isnothing(x) ? nothing : d[x]
-#     end
-
-#     body = Dict(
-#         "requests" => [
-#             Dict(
-#                 "addConditionalFormatRule" => Dict(
-#                     "rule" => Dict(
-#                         "ranges" => [cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index)],
-#                         "booleanRule" => Dict(
-#                             "condition" => Dict(
-#                                 "type" => "NUMBER_LESS_THAN_EQ"***,
-#                                 "values" => [ Dict("userEnteredValue" => "$value") for value in values ],
-#                             ),
-#                             "format" => Dict(
-#                                 "backgroundColor" => colorEntry(color),
-#                             ),
-#                         ),
-#                     ),
-#                 ),
-#             ),
-#         ],
-#     )
-
-#     return batch_update!(client, spreadsheet, body)
-# end
 
 #TODO: add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
 #TODO: add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
