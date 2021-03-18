@@ -23,8 +23,9 @@ using Colors
 include("enums.jl")
 include("types.jl")
 include("client.jl")
+include("meta.jl")
 
-export DataFrame, meta, show, sheet_names, get, update!,
+export DataFrame, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
         delete_rows!, delete_cols!, format_number!, format_datetime!, format_background_color!, format_color_scale!
 
@@ -58,95 +59,6 @@ Creates a DataFrame from spreadsheet range values.  The first row is converted t
 """
 DataFrame(values::CellRangeValues)::Union{Nothing,DataFrame} = values.values == nothing ? nothing : DataFrame([values.values[1,i]=>values.values[2:end,i] for i in 1:size(values.values,2)]...)
  
-
-"""
-Gets metadata about a spreadsheet.
-"""
-function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Dict{Any,Any}
-    @_print_python_exception begin
-        sheet = client.client.spreadsheets()
-        result = sheet.get(spreadsheetId=spreadsheet.id).execute()
-        return result
-    end
-end
-
-
-"""
-Gets metadata about a spreadsheet sheet.
-"""
-function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
-    metadata = meta(client, spreadsheet)
-    sheets = metadata["sheets"]
-
-    for sheet in sheets
-        properties = sheet["properties"]
-
-        if properties["title"] == title
-            return properties
-        end
-    end
-
-    throw(KeyError(title))
-end
-
-
-"""
-Gets metadata about a spreadsheet sheet.
-"""
-function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)::Dict{Any,Any}
-    metadata = meta(client, spreadsheet)
-    sheets = metadata["sheets"]
-
-    for sheet in sheets
-        properties = sheet["properties"]
-
-        if properties["sheetId"] == sheet_id
-            return properties
-        end
-    end
-
-    throw(KeyError(sheet_id))
-end
-
-
-"""
-Prints metadata about a spreadsheet.
-"""
-function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet)
-    m = meta(client, spreadsheet)
-    println("Spreadsheet:")
-    println(json(m, 4))
-end
-
-
-"""
-Prints metadata about a spreadsheet sheet.
-"""
-function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)
-    m = meta(client, spreadsheet, title)
-    println("Sheet:")
-    println(json(m, 4))
-end
-
-
-"""
-Prints metadata about a spreadsheet sheet.
-"""
-function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)
-    m = meta(client, spreadsheet, sheet_id)
-    println("Sheet:")
-    println(json(m, 4))
-end
-
-
-"""
-Gets the names of the sheets in the spreadsheet.
-"""
-function sheet_names(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{String}
-    m = meta(client, spreadsheet)
-    return [ s["properties"]["title"] for s in m["sheets"] ]
-end
-
 
 """
 Converts sheet values to a string matrix.
