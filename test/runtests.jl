@@ -4,7 +4,7 @@ using GoogleSheets: CellRangeValues, UpdateSummary
 using ColorTypes
 using Colors
 
-client = sheets_client(AUTH_SPREADSHEET_READWRITE)
+client = sheets_client(AUTH_SCOPE_READWRITE)
 
 spreadsheet_id = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
 spreadsheet = Spreadsheet(spreadsheet_id)

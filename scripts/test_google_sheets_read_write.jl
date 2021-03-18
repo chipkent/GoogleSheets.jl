@@ -3,7 +3,7 @@ using GoogleSheets
 
 # Example based upon: # https://developers.google.com/sheets/api/quickstart/python
 
-client = sheets_client(AUTH_SPREADSHEET_READWRITE)
+client = sheets_client(AUTH_SCOPE_READWRITE)
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"

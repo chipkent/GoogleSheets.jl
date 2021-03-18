@@ -20,6 +20,8 @@ import DataFrames: DataFrame, nrow, ncol, names
 import ColorTypes: Colorant, RGBA, red, green, blue, alpha
 using Colors
 
+include("enums.jl")
+
 export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets_client, meta, show, sheet_names, get, update!,
         clear!, batch_update!, add_sheet!, delete_sheet!, freeze!, append!, insert_rows!, insert_cols!,
         delete_rows!, delete_cols!, format_number!, format_datetime!, format_background_color!, format_color_scale!
@@ -29,18 +31,6 @@ export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, DataFrame, sheets
 Directory containing configuration files.
 """
 config_dir = joinpath(homedir(),".julia/config/google_sheets/")
-
-
-"""
-Create an enum and export the enum type and all values.
-"""
-macro _exported_enum(name, args...)
-    return esc(quote
-        @enum($name, $(args...))
-        export $name
-        $([:(export $arg) for arg in args]...)
-    end)
-end
 
 
 """
@@ -67,18 +57,9 @@ macro _print_python_exception(ex)
 end
 
 
-"""
-An authorization scope for accessing Google resources.
-
-AUTH_SPREADSHEET_READONLY:  Allows read-only access to the user's sheets and their properties.
-AUTH_SPREADSHEET_READWRITE: Allows read/write access to the user's sheets and their properties.
-"""
-@_exported_enum AuthScope AUTH_SPREADSHEET_READONLY AUTH_SPREADSHEET_READWRITE
-
-
 const _permission_urls = Dict(
-    AUTH_SPREADSHEET_READONLY => "https://www.googleapis.com/auth/spreadsheets.readonly",
-    AUTH_SPREADSHEET_READWRITE => "https://www.googleapis.com/auth/spreadsheets",
+    AUTH_SCOPE_READONLY => "https://www.googleapis.com/auth/spreadsheets.readonly",
+    AUTH_SCOPE_READWRITE => "https://www.googleapis.com/auth/spreadsheets",
 )
 
 
@@ -903,18 +884,6 @@ end
 
 
 """
-A Google Sheets value type.
-
-VALUE_TYPE_MIN: minimum value in a range
-VALUE_TYPE_MAX: maximum value in a range
-VALUE_TYPE_NUMBER: exact number
-VALUE_TYPE_PERCENT: percentage of a range
-VALUE_TYPE_PERCENTILE: percentile of a range
-"""
-@_exported_enum ValueType VALUE_TYPE_MIN VALUE_TYPE_MAX VALUE_TYPE_NUMBER VALUE_TYPE_PERCENT VALUE_TYPE_PERCENTILE
-
-
-"""
 Sets color scale formatting.
 """
 function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, 
@@ -999,6 +968,88 @@ function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadshee
 
     return batch_update!(client, spreadsheet, body)
 end
+
+# *****
+
+
+# """
+# Sets color scale formatting.
+# """
+# function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, 
+#     start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer; 
+#     min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
+#     mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
+#     max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
+
+#     properties = meta(client, spreadsheet, title)
+#     return format_color_scale!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index; 
+#         min_color=min_color, min_value_type=min_value_type, min_value=min_value, mid_color=mid_color, mid_value_type=mid_value_type, mid_value=mid_value, 
+#         max_color=max_color, max_value_type=max_value_type, max_value=max_value)
+# end
+
+
+# """
+# Sets color scale formatting.
+# """
+# function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, 
+#     start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer, color::Colorant, values::Array; 
+#     *****
+#     min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
+#     mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
+#     max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
+ 
+#     # function point(color, type, value)
+#     #     rst = Dict{Any,Any}(
+#     #             "color" => colorEntry(color),
+#     #     )
+
+#     #     if !isnothing(type)
+#     #         rst["type"] = type
+#     #     end
+
+#     #     if !isnothing(value)
+#     #         rst["value"] = "$value"
+#     #     end
+
+#     #     return rst
+#     # end
+
+#     #TODO: remove ******************************************
+#     function value_type(x)
+#         d = Dict(
+#             VALUE_TYPE_MIN => "MIN",
+#             VALUE_TYPE_MAX => "MAX",
+#             VALUE_TYPE_NUMBER => "NUMBER", 
+#             VALUE_TYPE_PERCENT => "PERCENT",
+#             VALUE_TYPE_PERCENTILE => "PERCENTILE",
+#         )
+
+#         return isnothing(x) ? nothing : d[x]
+#     end
+
+#     body = Dict(
+#         "requests" => [
+#             Dict(
+#                 "addConditionalFormatRule" => Dict(
+#                     "rule" => Dict(
+#                         "ranges" => [cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index)],
+#                         "booleanRule" => Dict(
+#                             "condition" => Dict(
+#                                 "type" => "NUMBER_LESS_THAN_EQ"***,
+#                                 "values" => [ Dict("userEnteredValue" => "$value") for value in values ],
+#                             ),
+#                             "format" => Dict(
+#                                 "backgroundColor" => colorEntry(color),
+#                             ),
+#                         ),
+#                     ),
+#                 ),
+#             ),
+#         ],
+#     )
+
+#     return batch_update!(client, spreadsheet, body)
+# end
 
 #TODO: add chart -> https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/charts
 #TODO: add filterview -> batch_update -> https://developers.google.com/sheets/api/guides/filters
