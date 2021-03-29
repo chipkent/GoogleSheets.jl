@@ -43,6 +43,7 @@ function add_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title:
 end
 
 
+#TODO: make this use sheet??
 """
 Removes a sheet from a spreadsheet.
 """
@@ -53,6 +54,7 @@ function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, tit
 end
 
 
+#TODO: make this use sheet??
 """
 Removes a sheet from a spreadsheet.
 """

@@ -1,5 +1,5 @@
 
-export GoogleSheetsClient, Spreadsheet, CellRange, CellRanges, CellRangeValues, UpdateSummary
+export GoogleSheetsClient, Spreadsheet, Sheet, CellRange, CellRanges, CellRangeValues, UpdateSummary
 
 
 """
@@ -17,6 +17,28 @@ struct Spreadsheet
     """Spreadsheet unique identifier."""
     id::AbstractString
 end
+
+
+"""
+A sheet in a spreadsheet.
+"""
+struct Sheet
+    spreadsheet::Spreadsheet
+    id::Int64 
+    title::AbstractString 
+end
+
+
+"""
+A sheet in a spreadsheet.
+"""
+Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, id::Int64) = Sheet(spreadsheet, id, meta(client, spreadsheet, id)["title"])
+
+
+"""
+A sheet in a spreadsheet.
+"""
+Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString) = Sheet(spreadsheet, meta(client, spreadsheet, title)["sheetId"], title)
 
 
 """

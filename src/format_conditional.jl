@@ -4,23 +4,7 @@ export format_color_scale!
 """
 Sets color scale formatting.
 """
-function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString, 
-    start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer; 
-    min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
-    mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
-    max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
-
-    properties = meta(client, spreadsheet, title)
-    return format_color_scale!(client, spreadsheet, properties["sheetId"], start_row_index, end_row_index, start_col_index, end_col_index; 
-        min_color=min_color, min_value_type=min_value_type, min_value=min_value, mid_color=mid_color, mid_value_type=mid_value_type, mid_value=mid_value, 
-        max_color=max_color, max_value_type=max_value_type, max_value=max_value)
-end
-
-
-"""
-Sets color scale formatting.
-"""
-function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64, 
+function format_color_scale!(client::GoogleSheetsClient, sheet::Sheet, 
     start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer; 
     min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
     mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
@@ -76,7 +60,7 @@ function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadshee
             Dict(
                 "addConditionalFormatRule" => Dict(
                     "rule" => Dict(
-                        "ranges" => [cellRange2D(sheet_id, start_row_index, end_row_index, start_col_index, end_col_index)],
+                        "ranges" => [cellRange2D(sheet, start_row_index, end_row_index, start_col_index, end_col_index)],
                         "gradientRule" => gradientRule(),
                     ),
                 ),
@@ -84,7 +68,7 @@ function format_color_scale!(client::GoogleSheetsClient, spreadsheet::Spreadshee
         ],
     )
 
-    return batch_update!(client, spreadsheet, body)
+    return batch_update!(client, sheet.spreadsheet, body)
 end
 
 # ***** TODO: implement below

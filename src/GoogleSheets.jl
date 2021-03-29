@@ -65,9 +65,9 @@ include("format_conditional.jl")
 """
 Returns a dictionary of values to describe a 1D range of cells in a sheet.
 """
-function cellRange1D(sheet_id::Int64, dim::AbstractString, start_index::Integer, end_index::Integer)
+function cellRange1D(sheet::Sheet, dim::AbstractString, start_index::Integer, end_index::Integer)
     return Dict(
-        "sheetId" => sheet_id,
+        "sheetId" => sheet.id,
         "dimension" => dim,
         "startIndex" => start_index,
         "endIndex" => end_index,
@@ -79,9 +79,9 @@ end
 """
 Returns a dictionary of values to describe a 2D range of cells in a sheet.
 """
-function cellRange2D(sheet_id::Int64, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer)
+function cellRange2D(sheet::Sheet, start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer)
     return Dict(
-            "sheetId" => sheet_id,
+            "sheetId" => sheet.id,
             "startRowIndex" => start_row_index,
             "endRowIndex" => end_row_index+1,
             "startColumnIndex" => start_col_index,

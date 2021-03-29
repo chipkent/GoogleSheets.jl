@@ -1,4 +1,4 @@
-export meta, show, sheet_names
+export meta, show, sheet_names, sheets
 
 
 """
@@ -52,6 +52,12 @@ end
 
 
 """
+Gets metadata about a spreadsheet sheet.
+"""
+meta(client::GoogleSheetsClient, sheet::Sheet)::Dict{Any,Any} = meta(client, sheet.spreadsheet, sheet.id)
+
+
+"""
 Prints metadata about a spreadsheet.
 """
 function Base.show(client::GoogleSheetsClient, spreadsheet::Spreadsheet)
@@ -82,9 +88,27 @@ end
 
 
 """
+Prints metadata about a spreadsheet sheet.
+"""
+Base.show(client::GoogleSheetsClient, sheet::Sheet) = Base.show(client, sheet.spreadsheet, sheet.id)
+
+
+#TODO: move to sheet?
+"""
 Gets the names of the sheets in the spreadsheet.
 """
 function sheet_names(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{String}
     m = meta(client, spreadsheet)
     return [ s["properties"]["title"] for s in m["sheets"] ]
 end
+
+
+#TODO: move to sheet?
+"""
+Gets the sheets in the spreadsheet.
+"""
+function sheets(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{Sheet}
+    m = meta(client, spreadsheet)
+    return [ Sheet(spreadsheet, s["properties"]["sheetId"], s["properties"]["title"]) for s in m["sheets"] ]
+end
+
