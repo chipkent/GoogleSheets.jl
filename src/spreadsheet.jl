@@ -15,11 +15,7 @@ Conditional formatting: https://developers.google.com/sheets/api/samples/conditi
 Conditional formatting: https://developers.google.com/sheets/api/guides/conditional-format
 """
 function batch_update!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
-    @_print_python_exception begin
-        sheet = client.client.spreadsheets()
-        result = sheet.batchUpdate(spreadsheetId=spreadsheet.id, body=body).execute()
-        return result
-    end
+    return _batchUpdate_novalues(client; spreadsheetId=spreadsheet.id, body=body)
 end
 
 

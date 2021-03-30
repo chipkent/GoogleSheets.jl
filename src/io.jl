@@ -35,13 +35,8 @@ end
 Gets a range of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
-    @_print_python_exception begin
-        sheet = client.client.spreadsheets()
-        result = sheet.values().get(spreadsheetId=range.spreadsheet.id,
-                                    majorDimension="ROWS",
-                                    range=range.range).execute()
-        return CellRangeValues(CellRange(range.spreadsheet, result["range"]), haskey(result, "values") ? _matrix(result["values"]) : nothing, result["majorDimension"])
-    end
+    result = _get(client; spreadsheetId=range.spreadsheet.id, majorDimension="ROWS", range=range.range)
+    return CellRangeValues(CellRange(range.spreadsheet, result["range"]), haskey(result, "values") ? _matrix(result["values"]) : nothing, result["majorDimension"])
 end
 
 
@@ -49,14 +44,8 @@ end
 Gets multiple ranges of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Vector{CellRangeValues}
-    @_print_python_exception begin
-        sheet = client.client.spreadsheets()
-        result = sheet.values().batchGet(spreadsheetId=ranges.spreadsheet.id,
-                                    majorDimension="ROWS",
-                                    ranges=ranges.ranges).execute()
-
-        return [CellRangeValues(CellRange(ranges.spreadsheet, r["range"]), haskey(r, "values") ? _matrix(r["values"]) : nothing, r["majorDimension"]) for r in result["valueRanges"] ]
-    end
+    result = _batchGet(client; spreadsheetId=ranges.spreadsheet.id, majorDimension="ROWS", ranges=ranges.ranges)
+    return [CellRangeValues(CellRange(ranges.spreadsheet, r["range"]), haskey(r, "values") ? _matrix(r["values"]) : nothing, r["majorDimension"]) for r in result["valueRanges"] ]
 end
 
 
@@ -80,15 +69,8 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
         "majorDimension" => "ROWS",
     )
 
-    @_print_python_exception begin
-        sheet = client.client.spreadsheets()
-        result = sheet.values().update(spreadsheetId=range.spreadsheet.id,
-                                range=range.range,
-                                valueInputOption= raw ? "RAW" : "USER_ENTERED",
-                                body=body).execute()
-
-        return UpdateSummary(CellRange(range.spreadsheet, result["updatedRange"]), result["updatedColumns"], result["updatedRows"], result["updatedCells"])
-    end
+    result = _update(client; spreadsheetId=range.spreadsheet.id, range=range.range, valueInputOption= raw ? "RAW" : "USER_ENTERED", body=body)
+    return UpdateSummary(CellRange(range.spreadsheet, result["updatedRange"]), result["updatedColumns"], result["updatedRows"], result["updatedCells"])
 end
 
 

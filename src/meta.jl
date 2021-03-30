@@ -5,11 +5,7 @@ export meta, show, sheet_names, sheets
 Gets metadata about a spreadsheet.
 """
 function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Dict{Any,Any}
-    @_print_python_exception begin
-        sheet = client.client.spreadsheets()
-        result = sheet.get(spreadsheetId=spreadsheet.id).execute()
-        return result
-    end
+    return _get_novalues(client; spreadsheetId=spreadsheet.id)
 end
 
 

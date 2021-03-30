@@ -2,6 +2,30 @@ export sheets_client
 
 
 """
+Print details on a python exception.
+"""
+macro _print_python_exception(ex)
+    # MacroTools.@q is used instead of quote so that the returned stacktrace
+    # has line numbers from the calling function and not the macro.
+    return esc(MacroTools.@q begin
+        try
+            $ex
+        catch e
+            if hasfield(typeof(e), :traceback)
+                println("Python error:")
+                println(e)
+                println("Python stacktrace:")
+                tb = pyimport("traceback")
+                tb.print_exception(e.traceback)
+                tb.print_tb(e.traceback)
+            end
+            rethrow(e)
+        end
+    end)
+end
+
+
+"""
 Directory containing configuration files.
 """
 config_dir = joinpath(homedir(),".julia/config/google_sheets/")
@@ -121,5 +145,58 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheet
         end
 
         return GoogleSheetsClient(build("sheets", "v4", credentials=creds))
+    end
+end
+
+
+#TODO: rename all of these to _gsapi_<func>
+"""
+Calls the python get API.
+"""
+function _get(client::GoogleSheetsClient; kwargs...)
+    @_print_python_exception begin
+        return client.client.spreadsheets().values().get(;kwargs...).execute()
+    end
+end
+
+
+#TODO: is the values call even needed???
+"""
+Calls the python get API.
+"""
+function _get_novalues(client::GoogleSheetsClient; kwargs...)
+    @_print_python_exception begin
+        return client.client.spreadsheets().get(;kwargs...).execute()
+    end
+end
+
+
+"""
+Calls the python batchGet API.
+"""
+function _batchGet(client::GoogleSheetsClient; kwargs...)
+    @_print_python_exception begin
+        return client.client.spreadsheets().values().batchGet(;kwargs...).execute()
+    end
+end
+
+
+"""
+Calls the python update API.
+"""
+function _update(client::GoogleSheetsClient; kwargs...)
+    @_print_python_exception begin
+        return client.client.spreadsheets().values().update(;kwargs...).execute()
+    end
+end
+
+
+#TODO: is the values call even needed???
+"""
+Calls the python batchUpdate API.
+"""
+function _batchUpdate_novalues(client::GoogleSheetsClient; kwargs...)
+    @_print_python_exception begin
+        return client.client.spreadsheets().batchUpdate(;kwargs...).execute()
     end
 end

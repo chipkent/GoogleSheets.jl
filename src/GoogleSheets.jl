@@ -21,30 +21,6 @@ import ColorTypes: Colorant, RGBA, red, green, blue, alpha
 using Colors
 
 
-"""
-Print details on a python exception.
-"""
-macro _print_python_exception(ex)
-    # MacroTools.@q is used instead of quote so that the returned stacktrace
-    # has line numbers from the calling function and not the macro.
-    return esc(MacroTools.@q begin
-        try
-            $ex
-        catch e
-            if hasfield(typeof(e), :traceback)
-                println("Python error:")
-                println(e)
-                println("Python stacktrace:")
-                tb = pyimport("traceback")
-                tb.print_exception(e.traceback)
-                tb.print_tb(e.traceback)
-            end
-            rethrow(e)
-        end
-    end)
-end
-
-
 include("enums.jl")
 include("types.jl")
 include("json.jl")
