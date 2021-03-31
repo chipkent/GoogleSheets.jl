@@ -7,6 +7,8 @@ A Google Sheets client.
 """
 struct GoogleSheetsClient
     client
+    rate_limiter_read::AbstractRateLimiter
+    rate_limiter_write::AbstractRateLimiter
 end
 
 

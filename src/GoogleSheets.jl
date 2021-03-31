@@ -14,6 +14,7 @@ A package for working with Google Sheets.
 module GoogleSheets
 
 using PyCall
+using RateLimiter
 using JSON
 import MacroTools
 import DataFrames: DataFrame, nrow, ncol, names

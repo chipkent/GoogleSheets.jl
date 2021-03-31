@@ -1,6 +1,33 @@
 export sheets_client
 
 
+# The Google Sheets API has access limits.
+# The default limits are 100 requests per 100 seconds per user.
+# Limits for reads and writes are tracked separately.
+# Higher limits are available in the Google Cloud console.
+# https://developers.google.com/sheets/api/limits
+#
+# Reality seems to be more complex.
+# The tokens per second seems to match the described limit.
+# If the max tokens are too large, the burstiness triggers limits, 
+# without clearly indicating that burstiness is the problem.
+#
+# These defaults seem to work.
+default_rate_limiter_tokens_per_sec = 0.95
+default_rate_limiter_max_tokens = 5
+default_rate_limiter_read = TokenBucketRateLimiter(default_rate_limiter_tokens_per_sec, default_rate_limiter_max_tokens, default_rate_limiter_max_tokens)
+default_rate_limiter_write = TokenBucketRateLimiter(default_rate_limiter_tokens_per_sec, default_rate_limiter_max_tokens, default_rate_limiter_max_tokens)
+
+
+"""
+Update the default rate limiter.
+"""
+function update_default_rate_limiter(rate_limiter_tokens_per_sec::Float64; rate_limiter_max_tokens::Float64=5)
+    global default_rate_limiter_read = TokenBucketRateLimiter(rate_limiter_tokens_per_sec, rate_limiter_max_tokens, rate_limiter_max_tokens)
+    global default_rate_limiter_write = TokenBucketRateLimiter(rate_limiter_tokens_per_sec, rate_limiter_max_tokens, rate_limiter_max_tokens)    
+end
+
+
 """
 Print details on a python exception.
 """
@@ -105,7 +132,10 @@ end
 """
 Creates a client for accessing Google Sheets.
 """
-function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheetsClient
+function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}}; 
+        rate_limiter_read::AbstractRateLimiter=default_rate_limiter_read, 
+        rate_limiter_write::AbstractRateLimiter=default_rate_limiter_write)::GoogleSheetsClient
+
     pickle = pyimport("pickle")
     os_path = pyimport("os.path")
     build = pyimport("googleapiclient.discovery").build
@@ -144,7 +174,7 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}})::GoogleSheet
             end
         end
 
-        return GoogleSheetsClient(build("sheets", "v4", credentials=creds))
+        return GoogleSheetsClient(build("sheets", "v4", credentials=creds), rate_limiter_read, rate_limiter_write)
     end
 end
 
@@ -154,7 +184,7 @@ end
 Calls the python get API.
 """
 function _get(client::GoogleSheetsClient; kwargs...)
-    @_print_python_exception begin
+    @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().values().get(;kwargs...).execute()
     end
 end
@@ -165,7 +195,7 @@ end
 Calls the python get API.
 """
 function _get_novalues(client::GoogleSheetsClient; kwargs...)
-    @_print_python_exception begin
+    @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().get(;kwargs...).execute()
     end
 end
@@ -175,7 +205,7 @@ end
 Calls the python batchGet API.
 """
 function _batchGet(client::GoogleSheetsClient; kwargs...)
-    @_print_python_exception begin
+    @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().values().batchGet(;kwargs...).execute()
     end
 end
@@ -185,7 +215,7 @@ end
 Calls the python update API.
 """
 function _update(client::GoogleSheetsClient; kwargs...)
-    @_print_python_exception begin
+    @rate_limit client.rate_limiter_write 1 @_print_python_exception begin
         return client.client.spreadsheets().values().update(;kwargs...).execute()
     end
 end
@@ -196,7 +226,7 @@ end
 Calls the python batchUpdate API.
 """
 function _batchUpdate_novalues(client::GoogleSheetsClient; kwargs...)
-    @_print_python_exception begin
+    @rate_limit client.rate_limiter_write 1 @_print_python_exception begin
         return client.client.spreadsheets().batchUpdate(;kwargs...).execute()
     end
 end
