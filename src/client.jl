@@ -179,22 +179,10 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}};
 end
 
 
-#TODO: rename all of these to _gsapi_<func>
 """
-Calls the python get API.
+GoogleSheets spreadsheet-get API.
 """
-function _get(client::GoogleSheetsClient; kwargs...)
-    @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
-        return client.client.spreadsheets().values().get(;kwargs...).execute()
-    end
-end
-
-
-#TODO: is the values call even needed???
-"""
-Calls the python get API.
-"""
-function _get_novalues(client::GoogleSheetsClient; kwargs...)
+function gsapi_spreadsheet_get(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().get(;kwargs...).execute()
     end
@@ -202,9 +190,19 @@ end
 
 
 """
-Calls the python batchGet API.
+GoogleSheets sheet-get API.
 """
-function _batchGet(client::GoogleSheetsClient; kwargs...)
+function gsapi_sheet_get(client::GoogleSheetsClient; kwargs...)
+    @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
+        return client.client.spreadsheets().values().get(;kwargs...).execute()
+    end
+end
+
+
+"""
+GoogleSheets sheet-batchGet API.
+"""
+function gsapi_sheet_batchget(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().values().batchGet(;kwargs...).execute()
     end
@@ -212,21 +210,22 @@ end
 
 
 """
-Calls the python update API.
+GoogleSheets sheet-update API.
 """
-function _update(client::GoogleSheetsClient; kwargs...)
+function gsapi_sheet_update(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_write 1 @_print_python_exception begin
         return client.client.spreadsheets().values().update(;kwargs...).execute()
     end
 end
 
 
-#TODO: is the values call even needed???
 """
-Calls the python batchUpdate API.
+GoogleSheets spreadsheet-batchUpdate API.
 """
-function _batchUpdate_novalues(client::GoogleSheetsClient; kwargs...)
+function gsapi_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_write 1 @_print_python_exception begin
         return client.client.spreadsheets().batchUpdate(;kwargs...).execute()
     end
 end
+
+#TODO: add gsapi_sheet_batchupdate?

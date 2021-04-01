@@ -5,7 +5,7 @@ export meta, show, sheet_names, sheets
 Gets metadata about a spreadsheet.
 """
 function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Dict{Any,Any}
-    return _get_novalues(client; spreadsheetId=spreadsheet.id)
+    return gsapi_spreadsheet_get(client; spreadsheetId=spreadsheet.id)
 end
 
 
