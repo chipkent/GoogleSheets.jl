@@ -9,8 +9,8 @@ export sheets_client
 #
 # Reality seems to be more complex.
 # The tokens per second seems to match the described limit.
-# If the max tokens are too large, the burstiness triggers limits, 
-# without clearly indicating that burstiness is the problem.
+# If the max tokens are too large, the burstiness triggers undocumented 
+# limits, without clearly indicating that burstiness is the problem.
 #
 # These defaults seem to work.
 default_rate_limiter_tokens_per_sec = 0.95
@@ -25,6 +25,15 @@ Update the default rate limiter.
 function update_default_rate_limiter(rate_limiter_tokens_per_sec::Float64; rate_limiter_max_tokens::Float64=5)
     global default_rate_limiter_read = TokenBucketRateLimiter(rate_limiter_tokens_per_sec, rate_limiter_max_tokens, rate_limiter_max_tokens)
     global default_rate_limiter_write = TokenBucketRateLimiter(rate_limiter_tokens_per_sec, rate_limiter_max_tokens, rate_limiter_max_tokens)    
+end
+
+
+"""
+Update the default rate limiter.
+"""
+function update_default_rate_limiter(rate_limiter_read::AbstractRateLimiter, rate_limiter_write::AbstractRateLimiter)
+    global default_rate_limiter_read = rate_limiter_read
+    global default_rate_limiter_write = rate_limiter_write
 end
 
 
@@ -228,4 +237,3 @@ function gsapi_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)
     end
 end
 
-#TODO: add gsapi_sheet_batchupdate?

@@ -10,6 +10,7 @@ macro _exported_enum(name, args...)
     end)
 end
 
+
 """
 Create and export a GoogleSheets enum.  The enum values are prefixed to avoid collisions.
 

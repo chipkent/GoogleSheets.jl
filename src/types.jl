@@ -6,8 +6,13 @@ export GoogleSheetsClient, Spreadsheet, Sheet, CellRange, CellRanges, CellRangeV
 A Google Sheets client.
 """
 struct GoogleSheetsClient
+    """ Client Python object. """
     client
+    
+    """ Rate limiter for API read calls. """
     rate_limiter_read::AbstractRateLimiter
+
+    """ Rate limiter for API write calls. """
     rate_limiter_write::AbstractRateLimiter
 end
 
@@ -16,7 +21,7 @@ end
 A spreadsheet.
 """
 struct Spreadsheet
-    """Spreadsheet unique identifier."""
+    """ Spreadsheet unique identifier. """
     id::AbstractString
 end
 
@@ -25,8 +30,13 @@ end
 A sheet in a spreadsheet.
 """
 struct Sheet
+    """ Spreadsheet """
     spreadsheet::Spreadsheet
+
+    """ Sheet unique identifier."""
     id::Int64 
+
+    """ Sheet title. """
     title::AbstractString 
 end
 
@@ -47,10 +57,10 @@ Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractStrin
 A range of cells within a spreadsheet.
 """
 struct CellRange
-    """Spreadsheet containing the cells."""
+    """ Spreadsheet containing the cells. """
     spreadsheet::Spreadsheet
 
-    """Range of cells."""
+    """ Range of cells. """
     range::AbstractString
 end
 
@@ -59,10 +69,10 @@ end
 Multiple ranges of cells within a spreadsheet.
 """
 struct CellRanges{T<:AbstractString}
-    """Spreadsheet containing the cells."""
+    """ Spreadsheet containing the cells. """
     spreadsheet::Spreadsheet
 
-    """Ranges of cells."""
+    """ Ranges of cells. """
     ranges::Array{T,1}
 end
 
@@ -71,13 +81,13 @@ end
 A range of cell values within a spreadsheet.
 """
 struct CellRangeValues
-    """Range of cells within a spreadsheet."""
+    """ Range of cells within a spreadsheet. """
     range::CellRange
 
-    """Values of cells within a spreadsheet."""
+    """ Values of cells within a spreadsheet. """
     values::Union{Nothing,Array{String,2}}
 
-    """Major dimension of the cell values."""
+    """ Major dimension of the cell values. """
     major_dimension::AbstractString
 end
 
@@ -86,15 +96,15 @@ end
 Summary of updated updated cells.
 """
 struct UpdateSummary
-    """Range of cells within a spreadsheet."""
+    """ Range of cells within a spreadsheet. """
     range::CellRange
 
-    """Number of updated columns."""
+    """ Number of updated columns. """
     updated_columns::Int64
 
-    """Number of updated rows."""
+    """ Number of updated rows. """
     updated_rows::Int64
 
-    """Number of updated cells."""
+    """ Number of updated cells. """
     updated_cells::Int64
 end
