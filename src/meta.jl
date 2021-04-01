@@ -1,4 +1,4 @@
-export meta, show, sheet_names, sheets
+export meta, show
 
 
 """
@@ -10,16 +10,16 @@ end
 
 
 """
-Gets metadata about a spreadsheet sheet.
+Gets metadata about a spreadsheet key-value pair.
 """
-function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, key::AbstractString, value)::Dict{Any,Any}
     metadata = meta(client, spreadsheet)
     sheets = metadata["sheets"]
 
     for sheet in sheets
         properties = sheet["properties"]
 
-        if properties["title"] == title
+        if properties[key] == value
             return properties
         end
     end
@@ -31,20 +31,13 @@ end
 """
 Gets metadata about a spreadsheet sheet.
 """
-function meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)::Dict{Any,Any}
-    metadata = meta(client, spreadsheet)
-    sheets = metadata["sheets"]
+meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any} = meta(client, spreadsheet, "title", title)
 
-    for sheet in sheets
-        properties = sheet["properties"]
 
-        if properties["sheetId"] == sheet_id
-            return properties
-        end
-    end
-
-    throw(KeyError(sheet_id))
-end
+"""
+Gets metadata about a spreadsheet sheet.
+"""
+meta(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)::Dict{Any,Any} = meta(client, spreadsheet, "sheetId", sheet_id)
 
 
 """
@@ -88,23 +81,4 @@ Prints metadata about a spreadsheet sheet.
 """
 Base.show(client::GoogleSheetsClient, sheet::Sheet) = Base.show(client, sheet.spreadsheet, sheet.id)
 
-
-#TODO: move to sheet?
-"""
-Gets the names of the sheets in the spreadsheet.
-"""
-function sheet_names(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{String}
-    m = meta(client, spreadsheet)
-    return [ s["properties"]["title"] for s in m["sheets"] ]
-end
-
-
-#TODO: move to sheet?
-"""
-Gets the sheets in the spreadsheet.
-"""
-function sheets(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{Sheet}
-    m = meta(client, spreadsheet)
-    return [ Sheet(spreadsheet, s["properties"]["sheetId"], s["properties"]["title"]) for s in m["sheets"] ]
-end
 

@@ -1,4 +1,22 @@
-export batch_update!, add_sheet!, delete_sheet!
+export sheet_names, sheets, batch_update!, add_sheet!, delete_sheet!
+
+
+"""
+Gets the names of the sheets in the spreadsheet.
+"""
+function sheet_names(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{String}
+    m = meta(client, spreadsheet)
+    return [ s["properties"]["title"] for s in m["sheets"] ]
+end
+
+
+"""
+Gets the sheets in the spreadsheet.
+"""
+function sheets(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{Sheet}
+    m = meta(client, spreadsheet)
+    return [ Sheet(spreadsheet, s["properties"]["sheetId"], s["properties"]["title"]) for s in m["sheets"] ]
+end
 
 
 """
