@@ -191,7 +191,7 @@ end
 """
 GoogleSheets spreadsheet-get API.
 """
-function gsapi_spreadsheet_get(client::GoogleSheetsClient; kwargs...)
+function gsheet_api_spreadsheet_get(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().get(;kwargs...).execute()
     end
@@ -201,7 +201,7 @@ end
 """
 GoogleSheets sheet-get API.
 """
-function gsapi_sheet_get(client::GoogleSheetsClient; kwargs...)
+function gsheet_api_sheet_get(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().values().get(;kwargs...).execute()
     end
@@ -211,7 +211,7 @@ end
 """
 GoogleSheets sheet-batchGet API.
 """
-function gsapi_sheet_batchget(client::GoogleSheetsClient; kwargs...)
+function gsheet_api_sheet_batchget(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
         return client.client.spreadsheets().values().batchGet(;kwargs...).execute()
     end
@@ -221,7 +221,7 @@ end
 """
 GoogleSheets sheet-update API.
 """
-function gsapi_sheet_update(client::GoogleSheetsClient; kwargs...)
+function gsheet_api_sheet_update(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_write 1 @_print_python_exception begin
         return client.client.spreadsheets().values().update(;kwargs...).execute()
     end
@@ -231,7 +231,7 @@ end
 """
 GoogleSheets spreadsheet-batchUpdate API.
 """
-function gsapi_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)
+function gsheet_api_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_write 1 @_print_python_exception begin
         return client.client.spreadsheets().batchUpdate(;kwargs...).execute()
     end

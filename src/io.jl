@@ -35,7 +35,7 @@ end
 Gets a range of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
-    result = gsapi_sheet_get(client; spreadsheetId=range.spreadsheet.id, majorDimension="ROWS", range=range.range)
+    result = gsheet_api_sheet_get(client; spreadsheetId=range.spreadsheet.id, majorDimension="ROWS", range=range.range)
     return CellRangeValues(CellRange(range.spreadsheet, result["range"]), haskey(result, "values") ? _matrix(result["values"]) : nothing, result["majorDimension"])
 end
 
@@ -44,7 +44,7 @@ end
 Gets multiple ranges of cell values from a spreadsheet.
 """
 function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Vector{CellRangeValues}
-    result = gsapi_sheet_batchget(client; spreadsheetId=ranges.spreadsheet.id, majorDimension="ROWS", ranges=ranges.ranges)
+    result = gsheet_api_sheet_batchget(client; spreadsheetId=ranges.spreadsheet.id, majorDimension="ROWS", ranges=ranges.ranges)
     return [CellRangeValues(CellRange(ranges.spreadsheet, r["range"]), haskey(r, "values") ? _matrix(r["values"]) : nothing, r["majorDimension"]) for r in result["valueRanges"] ]
 end
 
@@ -69,7 +69,7 @@ function update!(client::GoogleSheetsClient, range::CellRange, values::Array{<:A
         "majorDimension" => "ROWS",
     )
 
-    result = gsapi_sheet_update(client; spreadsheetId=range.spreadsheet.id, range=range.range, valueInputOption= raw ? "RAW" : "USER_ENTERED", body=body)
+    result = gsheet_api_sheet_update(client; spreadsheetId=range.spreadsheet.id, range=range.range, valueInputOption= raw ? "RAW" : "USER_ENTERED", body=body)
     return UpdateSummary(CellRange(range.spreadsheet, result["updatedRange"]), result["updatedColumns"], result["updatedRows"], result["updatedCells"])
 end
 

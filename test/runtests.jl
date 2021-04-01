@@ -89,7 +89,7 @@ init_test()
 
 # Insert rows
 sheet = Sheet(client, spreadsheet, sheet_name)
-insert_rows!(client, sheet, 2, 3)
+insert_rows!(client, CellIndexRange1D(sheet, 2, 3))
 result = get(client, CellRange(spreadsheet, sheet_name))
 values = fill("11", 6, 5)
 values[3,:] .= ""
@@ -97,7 +97,7 @@ values[3,:] .= ""
 
 # Delete rows
 sheet = Sheet(client, spreadsheet, sheet_name)
-delete_rows!(client, sheet, 2, 3)
+delete_rows!(client, CellIndexRange1D(sheet, 2, 3))
 result = get(client, CellRange(spreadsheet, sheet_name))
 values = fill("11", 5, 5)
 @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet_name)!A1:Z1000"), values, "ROWS")
@@ -108,7 +108,7 @@ init_test()
 
 # Insert columns
 sheet = Sheet(client, spreadsheet, sheet_name)
-insert_cols!(client, sheet, 2, 3)
+insert_cols!(client, CellIndexRange1D(sheet, 2, 3))
 result = get(client, CellRange(spreadsheet, sheet_name))
 values = fill("11", 5, 6)
 values[:,3] .= ""
@@ -116,7 +116,7 @@ values[:,3] .= ""
 
 # Delete columns
 sheet = Sheet(client, spreadsheet, sheet_name)
-delete_cols!(client, sheet, 2, 3)
+delete_cols!(client, CellIndexRange1D(sheet, 2, 3))
 result = get(client, CellRange(spreadsheet, sheet_name))
 values = fill("11", 5, 5)
 @test result == CellRangeValues(CellRange(spreadsheet, "$(sheet_name)!A1:Z1000"), values, "ROWS")
@@ -172,12 +172,12 @@ show(client, sheet)
 init_test()
 
 sheet = Sheet(client, spreadsheet, sheet_name)
-format_number!(client, sheet, 2, 3, 1, 2, "0.0")
-format_datetime!(client, sheet, 4, 5, 1, 2, "hh:mm:ss am/pm, ddd mmm dd yyyy")
-format_background_color!(client, sheet, 4, 5, 1, 2, RGBA(0.5, 0.5, 0.5, 0.8))
-format_background_color!(client, sheet, 4, 5, 1, 2, RGB(0.5, 0.5, 0.5))
-format_background_color!(client, sheet, 4, 5, 1, 2, Gray(0.5))
-format_color_scale!(client, sheet, 4, 5, 1, 2)
-format_color_scale!(client, sheet, 4, 5, 1, 2; min_value_type=VALUE_TYPE_NUMBER, min_value=-3, max_value_type=VALUE_TYPE_NUMBER, max_value=3, mid_color=colorant"white", mid_value_type=VALUE_TYPE_NUMBER, mid_value=0)
+format_number!(client, CellIndexRange2D(sheet, 2, 3, 1, 2), "0.0")
+format_datetime!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), "hh:mm:ss am/pm, ddd mmm dd yyyy")
+format_background_color!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), RGBA(0.5, 0.5, 0.5, 0.8))
+format_background_color!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), RGB(0.5, 0.5, 0.5))
+format_background_color!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), Gray(0.5))
+format_color_scale!(client, CellIndexRange2D(sheet, 4, 5, 1, 2))
+format_color_scale!(client, CellIndexRange2D(sheet, 4, 5, 1, 2); min_value_type=VALUE_TYPE_NUMBER, min_value=-3, max_value_type=VALUE_TYPE_NUMBER, max_value=3, mid_color=colorant"white", mid_value_type=VALUE_TYPE_NUMBER, mid_value=0)
 
 ################################################################################

@@ -68,66 +68,66 @@ end
 """
 Insert rows into to a sheet.
 """
-function insert_rows!(client::GoogleSheetsClient, sheet::Sheet, start_index::Integer, end_index::Integer)::Dict{Any,Any}
-    return _insert!(client, sheet, "ROWS", start_index, end_index)
+function insert_rows!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
+    return _insert!(client, range, "ROWS")
 end
 
 
 """
 Insert columns into to a sheet.
 """
-function insert_cols!(client::GoogleSheetsClient, sheet::Sheet, start_index::Integer, end_index::Integer)::Dict{Any,Any}
-    return _insert!(client, sheet, "COLUMNS", start_index, end_index)
+function insert_cols!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
+    return _insert!(client, range, "COLUMNS")
 end
 
 
 """
 Insert rows or columns into to a sheet.
 """
-function _insert!(client::GoogleSheetsClient, sheet::Sheet, dim::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
+function _insert!(client::GoogleSheetsClient, range::CellIndexRange1D, dim::AbstractString)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
                 "insertDimension" => Dict(
-                    "range" => cellRange1D(sheet, dim, start_index, end_index),
+                    "range" => gsheet_json(range, dim)
                 ),
             ),
         ],
     )
 
-    return batch_update!(client, sheet.spreadsheet, body)
+    return batch_update!(client, range.sheet.spreadsheet, body)
 end
 
 
 """
 Delete rows from a sheet.
 """
-function delete_rows!(client::GoogleSheetsClient, sheet::Sheet, start_index::Integer, end_index::Integer)::Dict{Any,Any}
-    return _delete!(client, sheet, "ROWS", start_index, end_index)
+function delete_rows!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
+    return _delete!(client, range, "ROWS")
 end
 
 
 """
 Delete columns from a sheet.
 """
-function delete_cols!(client::GoogleSheetsClient, sheet::Sheet, start_index::Integer, end_index::Integer)::Dict{Any,Any}
-    return _delete!(client, sheet, "COLUMNS", start_index, end_index)
+function delete_cols!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
+    return _delete!(client, range, "COLUMNS")
 end
 
 
 """
 Delete rows or columns from a sheet.
 """
-function _delete!(client::GoogleSheetsClient, sheet::Sheet, dim::AbstractString, start_index::Integer, end_index::Integer)::Dict{Any,Any}
+function _delete!(client::GoogleSheetsClient, range::CellIndexRange1D, dim::AbstractString)::Dict{Any,Any}
     body = Dict(
         "requests" => [
             Dict(
                 "deleteDimension" => Dict(
-                    "range" => cellRange1D(sheet, dim, start_index, end_index),
+                    "range" => gsheet_json(range, dim)
                 ),
             ),
         ],
     )
 
-    return batch_update!(client, sheet.spreadsheet, body)
+    return batch_update!(client, range.sheet.spreadsheet, body)
 end

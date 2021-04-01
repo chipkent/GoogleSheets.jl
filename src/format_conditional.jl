@@ -4,8 +4,7 @@ export format_color_scale!
 """
 Sets color scale formatting.
 """
-function format_color_scale!(client::GoogleSheetsClient, sheet::Sheet, 
-    start_row_index::Integer, end_row_index::Integer, start_col_index::Integer, end_col_index::Integer; 
+function format_color_scale!(client::GoogleSheetsClient, range::CellIndexRange2D; 
     min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
     mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
     max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
@@ -60,7 +59,7 @@ function format_color_scale!(client::GoogleSheetsClient, sheet::Sheet,
             Dict(
                 "addConditionalFormatRule" => Dict(
                     "rule" => Dict(
-                        "ranges" => [cellRange2D(sheet, start_row_index, end_row_index, start_col_index, end_col_index)],
+                        "ranges" => [gsheet_json(range)],
                         "gradientRule" => gradientRule(),
                     ),
                 ),
@@ -68,7 +67,7 @@ function format_color_scale!(client::GoogleSheetsClient, sheet::Sheet,
         ],
     )
 
-    return batch_update!(client, sheet.spreadsheet, body)
+    return batch_update!(client, range.sheet.spreadsheet, body)
 end
 
 # ***** TODO: implement below

@@ -1,5 +1,5 @@
 
-export GoogleSheetsClient, Spreadsheet, Sheet, CellRange, CellRanges, CellRangeValues, UpdateSummary
+export GoogleSheetsClient, Spreadsheet, Sheet, CellRange, CellRanges, CellRangeValues, UpdateSummary, CellIndexRange1D, CellIndexRange2D
 
 
 """
@@ -108,3 +108,40 @@ struct UpdateSummary
     """ Number of updated cells. """
     updated_cells::Int64
 end
+
+
+"""
+1D Range of cell values.
+"""
+struct CellIndexRange1D
+    """ Sheet containing the cells. """
+    sheet::Sheet
+
+    """ Start index of the cells. """
+    start_index::Integer
+
+    """ End index of the cells. """
+    end_index::Integer
+end
+
+
+"""
+2D Range of cell values.
+"""
+struct CellIndexRange2D
+    """ Sheet containing the cells. """
+    sheet::Sheet
+
+    """ Start row index of the cells. """
+    start_row_index::Integer
+
+    """ End row index of the cells. """
+    end_row_index::Integer
+
+    """ Start column index of the cells. """
+    start_col_index::Integer
+ 
+    """ End column index of the cells. """
+    end_col_index::Integer
+end
+

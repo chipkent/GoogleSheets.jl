@@ -33,7 +33,7 @@ Conditional formatting: https://developers.google.com/sheets/api/samples/conditi
 Conditional formatting: https://developers.google.com/sheets/api/guides/conditional-format
 """
 function batch_update!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
-    return gsapi_speadsheet_batchupdate(client; spreadsheetId=spreadsheet.id, body=body)
+    return gsheet_api_speadsheet_batchupdate(client; spreadsheetId=spreadsheet.id, body=body)
 end
 
 
