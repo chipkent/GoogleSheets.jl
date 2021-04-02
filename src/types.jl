@@ -168,6 +168,9 @@ struct CellFormat
     """ Should the text be bold. """
     text_bold::Union{Nothing,Bool}
 
+    """ Should the text be strikethrough. """
+    text_strikethrough::Union{Nothing,Bool}
+
     """ Text color. """
     text_color::Union{Nothing,Colorant} 
 
@@ -180,7 +183,8 @@ struct CellFormat
         number_format_pattern=nothing,
         text_italic=nothing,
         text_bold=nothing,
+        text_strikethrough=nothing,
         text_color=nothing,
         text_font_size=nothing
-        ) = new(background_color, number_format_type, number_format_pattern, text_italic, text_bold, text_color, text_font_size)
+        ) = new(background_color, number_format_type, number_format_pattern, text_italic, text_bold, text_strikethrough, text_color, text_font_size)
 end
