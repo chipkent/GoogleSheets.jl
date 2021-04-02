@@ -1,5 +1,5 @@
 
-export GoogleSheetsClient, Spreadsheet, Sheet, CellRange, CellRanges, CellRangeValues, UpdateSummary, CellIndexRange1D, CellIndexRange2D
+export GoogleSheetsClient, Spreadsheet, Sheet, CellRange, CellRanges, CellRangeValues, UpdateSummary, CellIndexRange1D, CellIndexRange2D, CellFormat
 
 
 """
@@ -145,3 +145,42 @@ struct CellIndexRange2D
     end_col_index::Integer
 end
 
+
+"""
+Formatting for a cell.
+"""
+struct CellFormat
+    """ Background color. """
+    background_color::Union{Nothing,Colorant}
+
+    """ Number format type. """
+    number_format_type::Union{Nothing,NumberFormatType}
+
+    """ 
+    Number format pattern. 
+    See: https://developers.google.com/sheets/api/guides/formats
+    """
+    number_format_pattern::Union{Nothing,AbstractString}
+
+    """ Should the text be formatted in italics. """
+    text_italic::Union{Nothing,Bool}
+
+    """ Should the text be bold. """
+    text_bold::Union{Nothing,Bool}
+
+    """ Text color. """
+    text_color::Union{Nothing,Colorant} 
+
+    """ Text font size. """
+    text_font_size::Union{Nothing,Real}
+
+    CellFormat(;
+        background_color=nothing,
+        number_format_type=nothing,
+        number_format_pattern=nothing,
+        text_italic=nothing,
+        text_bold=nothing,
+        text_color=nothing,
+        text_font_size=nothing
+        ) = new(background_color, number_format_type, number_format_pattern, text_italic, text_bold, text_color, text_font_size)
+end

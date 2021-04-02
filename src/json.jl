@@ -39,3 +39,28 @@ function gsheet_json(range::CellIndexRange2D)
             "endColumnIndex" => range.end_col_index+1,
         )
 end
+
+
+"""
+Returns a dictionary of values to describe a Format.
+"""
+function gsheet_json(format::CellFormat)
+    rst = Dict{String,Any}()
+
+    number_format = Dict{String,Any}()
+    if !isnothing(format.number_format_type)  number_format["type"] = gsheet_string(format.number_format_type) end
+    if !isnothing(format.number_format_pattern)  number_format["pattern"] = format.number_format_pattern end
+    if length(number_format) > 0  rst["numberFormat"] = number_format end
+
+    text_format = Dict{String,Any}()
+    if !isnothing(format.text_bold)  text_format["bold"] = true end
+    if !isnothing(format.text_italic)  text_format["italic"] = true end
+    if !isnothing(format.text_color)  text_format["foreground_color"] = gsheet_json(format.text_color) end
+    if !isnothing(format.text_font_size)  text_format["fontSize"] = format.text_font_size end
+    if length(text_format) > 0  rst["textFormat"] = text_format end
+
+    if !isnothing(format.background_color)  rst["backgroundColor"] = gsheet_json(format.background_color) end
+
+    return rst
+end
+

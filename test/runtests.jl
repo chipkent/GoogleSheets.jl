@@ -172,12 +172,17 @@ show(client, sheet)
 init_test()
 
 sheet = Sheet(client, spreadsheet, sheet_name)
-format_number!(client, CellIndexRange2D(sheet, 2, 3, 1, 2), "0.0")
-format_datetime!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), "hh:mm:ss am/pm, ddd mmm dd yyyy")
-format_background_color!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), RGBA(0.5, 0.5, 0.5, 0.8))
-format_background_color!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), RGB(0.5, 0.5, 0.5))
-format_background_color!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), Gray(0.5))
-format_color_scale!(client, CellIndexRange2D(sheet, 4, 5, 1, 2))
-format_color_scale!(client, CellIndexRange2D(sheet, 4, 5, 1, 2); min_value_type=VALUE_TYPE_NUMBER, min_value=-3, max_value_type=VALUE_TYPE_NUMBER, max_value=3, mid_color=colorant"white", mid_value_type=VALUE_TYPE_NUMBER, mid_value=0)
+format!(client, CellIndexRange2D(sheet, 2, 3, 1, 2), CellFormat(number_format_type=NUMBER_FORMAT_TYPE_NUMBER, number_format_pattern="0.0"))
+format!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), CellFormat(number_format_type=NUMBER_FORMAT_TYPE_DATE, number_format_pattern="hh:mm:ss am/pm, ddd mmm dd yyyy"))
+format!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), CellFormat(background_color=RGBA(0.5, 0.5, 0.5, 0.8)))
+format!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), CellFormat(background_color=RGB(0.5, 0.5, 0.5)))
+format!(client, CellIndexRange2D(sheet, 4, 5, 1, 2), CellFormat(background_color=Gray(0.5)))
+format!(client, CellIndexRange2D(sheet, 2, 3, 1, 2), CellFormat(
+    background_color=RGBA(0.5, 0.5, 0.5, 0.8), number_format_type=NUMBER_FORMAT_TYPE_NUMBER, number_format_pattern="0.0", 
+    text_italic=true, text_bold=true, text_color=RGB(0.5, 0.5, 0.5), text_font_size=14))
+
+
+format_color_gradient!(client, CellIndexRange2D(sheet, 4, 5, 1, 2))
+format_color_gradient!(client, CellIndexRange2D(sheet, 4, 5, 1, 2); min_value_type=VALUE_TYPE_NUMBER, min_value=-3, max_value_type=VALUE_TYPE_NUMBER, max_value=3, mid_color=colorant"white", mid_value_type=VALUE_TYPE_NUMBER, mid_value=0)
 
 ################################################################################
