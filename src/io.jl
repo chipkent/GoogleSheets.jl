@@ -102,7 +102,6 @@ function update!(client::GoogleSheetsClient, range::CellRange, df::DataFrame; kw
     return update!(client, range, df_to_string(df); kwargs...)
 end
 
-#TODO: add batch update
 
 """
 Clears a range of cell values in a spreadsheet.
@@ -120,4 +119,3 @@ function clear!(client::GoogleSheetsClient, range::CellRange)::UpdateSummary
     return update!(client, CellRange(range.spreadsheet, rng.range), vls)
 end
 
-#TODO: add batch clear
