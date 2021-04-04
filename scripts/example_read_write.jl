@@ -3,7 +3,7 @@ using GoogleSheets
 
 # Example based upon: # https://developers.google.com/sheets/api/quickstart/python
 
-client = sheets_client(AUTH_SPREADSHEET_READWRITE)
+client = sheets_client(AUTH_SCOPE_READWRITE)
 
 # The ID and range of a sample spreadsheet.
 SAMPLE_SPREADSHEET_ID = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
@@ -25,17 +25,12 @@ result = update!(client, range, values)
 ################################################################################
 
 result = get(client, range)
+println("RESULT: $(result)")
 
-println("KEYS: $(keys(result))")
-println("RANGE: $(result["range"])")
-println("MAJORDIM: $(result["majorDimension"])")
-
-values = result["values"]
-
-if isnothing(values)
+if isnothing(result.values)
     println("No data found.")
 else
-    for row in eachrow(values)
+    for row in eachrow(result.values)
         println("ROW: $row")
     end
 end
@@ -43,18 +38,14 @@ end
 ################################################################################
 
 result = get(client, ranges)
+println("RESULT: $(result)")
 
-println("KEYS: $(keys(result))")
-println("RANGE: $(result["valueRanges"])")
-
-values = result["valueRanges"]
-
-if isnothing(values)
-    println("No data found.")
-else
-    for (k,v) in values
-        for row in eachrow(v[2])
-            println("ROW: $(k[2]) $row")
+for r in result
+    if isnothing(r.values)
+        println("No data found.")
+    else
+        for row in eachrow(r.values)
+            println("ROW: $(r.range) $row")
         end
     end
 end
@@ -77,13 +68,13 @@ values = fill(11, 5, 5)
 println("VALUES $(typeof(values)) $values")
 result = update!(client, CellRange(sheet, "test sheet"), values)
 
-freeze!(client, sheet, "test sheet", 2, 3)
-append!(client, sheet, "test sheet", 1000, 3)
+freeze!(client, Sheet(client, sheet, "test sheet"), 2, 3)
+append!(client, Sheet(client, sheet, "test sheet"), 1000, 3)
 
-insert_rows!(client, sheet, "test sheet", 2, 3, false)
-insert_cols!(client, sheet, "test sheet", 2, 3, false)
+insert_rows!(client, CellIndexRange1D(Sheet(client, sheet, "test sheet"), 2, 3))
+insert_cols!(client, CellIndexRange1D(Sheet(client, sheet, "test sheet"), 2, 3))
 
-delete_rows!(client, sheet, "test sheet", 2, 3)
-delete_cols!(client, sheet, "test sheet", 2, 3)
+delete_rows!(client, CellIndexRange1D(Sheet(client, sheet, "test sheet"), 2, 3))
+delete_cols!(client, CellIndexRange1D(Sheet(client, sheet, "test sheet"), 2, 3))
 
 clear!(client, CellRange(sheet, "test sheet!B2:C3"))
