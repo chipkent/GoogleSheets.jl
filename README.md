@@ -2,7 +2,6 @@
 
 Julia package for working with Google Sheets.
 
-**** update this *** 
 Key types:
 * GoogleSheetsClient
 * Spreadsheet
