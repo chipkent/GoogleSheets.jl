@@ -13,8 +13,8 @@ export sheets_client
 # limits, without clearly indicating that burstiness is the problem.
 #
 # These defaults seem to work.
-default_rate_limiter_tokens_per_sec = 0.95
-default_rate_limiter_max_tokens = 5
+default_rate_limiter_tokens_per_sec = 0.9
+default_rate_limiter_max_tokens = 4
 default_rate_limiter_read = TokenBucketRateLimiter(default_rate_limiter_tokens_per_sec, default_rate_limiter_max_tokens, default_rate_limiter_max_tokens)
 default_rate_limiter_write = TokenBucketRateLimiter(default_rate_limiter_tokens_per_sec, default_rate_limiter_max_tokens, default_rate_limiter_max_tokens)
 
