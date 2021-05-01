@@ -6,7 +6,7 @@ using Colors
 
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
-spreadsheet_id = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
+spreadsheet_id = ENV["SPREADSHEET_ID"]
 spreadsheet = Spreadsheet(spreadsheet_id)
 sheet_name = "TestSheet"
 
