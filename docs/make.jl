@@ -1,15 +1,15 @@
 
-using Documenter, RateLimiter
+using Documenter, GoogleSheets
 
 makedocs(
     modules = [RateLimiter],
-    sitename="RateLimiter.jl", 
+    sitename="GoogleSheets.jl", 
     authors = "Chip Kent",
     format = Documenter.HTML(),
 )
 
 deploydocs(
-    repo = "github.com/chipkent/RateLimiter.jl.git", 
+    repo = "github.com/chipkent/GoogleSheets.jl.git", 
     devbranch = "main",
     push_preview = true,
 )
