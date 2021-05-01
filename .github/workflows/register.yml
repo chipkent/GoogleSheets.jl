@@ -1,0 +1,20 @@
+#
+# Register the package in the official Julia repository.
+#
+# ***** Follow the directions here:  https://github.com/JuliaRegistries/Registrator.jl
+
+name: Register Package
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to register or component to bump
+        required: true
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: julia-actions/RegisterAction@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
