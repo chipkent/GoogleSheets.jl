@@ -2,7 +2,7 @@
 using Documenter, GoogleSheets
 
 makedocs(
-    modules = [RateLimiter],
+    modules = [GoogleSheets],
     sitename="GoogleSheets.jl", 
     authors = "Chip Kent",
     format = Documenter.HTML(),
