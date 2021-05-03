@@ -8,7 +8,7 @@ Conda.add_channel("conda-forge")
 Conda.update()
 Conda.add(["google-api-python-client","google-auth-httplib2","google-auth-oauthlib"])
 
-println("ENV: ", ENV)
+println("ENV: \n", ENV)
 println(Conda.list())
 using PyCall
 pickle = pyimport("pickle")

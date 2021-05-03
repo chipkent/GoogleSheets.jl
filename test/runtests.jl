@@ -8,6 +8,15 @@ using Colors
 # import Pkg; Pkg.add("Conda")
 # using Conda
 # println(Conda.list())
+using PyCall
+pickle = pyimport("pickle")
+os_path = pyimport("os.path")
+build = pyimport("googleapiclient.discovery").build
+InstalledAppFlow = pyimport("google_auth_oauthlib.flow").InstalledAppFlow
+Request = pyimport("google.auth.transport.requests").Request
+open = pybuiltin("open")
+println("EVERYTHING WORKED")
+
 
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
