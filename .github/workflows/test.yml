@@ -20,7 +20,8 @@ jobs:
         julia-version: ['1.5']
         #TODO: julia-arch: [x64, x86]
         julia-arch: [x64]
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        #TODO: os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [windows-latest, macOS-latest]
         exclude:
           - os: macOS-latest
             julia-arch: x86
