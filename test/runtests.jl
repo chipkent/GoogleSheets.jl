@@ -5,6 +5,7 @@ using ColorTypes
 using Colors
 
 #TODO: remove this 
+import Pkg; Pkg.add("Conda")
 using Conda
 println(Conda.list())
 
