@@ -4,10 +4,10 @@ using GoogleSheets: CellRangeValues, UpdateSummary
 using ColorTypes
 using Colors
 
-#TODO: remove this 
-import Pkg; Pkg.add("Conda")
-using Conda
-println(Conda.list())
+# #TODO: remove this 
+# import Pkg; Pkg.add("Conda")
+# using Conda
+# println(Conda.list())
 
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
