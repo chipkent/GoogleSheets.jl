@@ -4,6 +4,10 @@ using GoogleSheets: CellRangeValues, UpdateSummary
 using ColorTypes
 using Colors
 
+#TODO: remove this 
+using Conda
+println(Conda.list())
+
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
 spreadsheet_id = ENV["SPREADSHEET_ID"]
