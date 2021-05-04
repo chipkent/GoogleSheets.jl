@@ -173,6 +173,10 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}};
             if !isnothing(creds) && creds.expired && !isnothing(creds.refresh_token)
                 creds.refresh(Request())
             else
+                #TODO: remove debug stuff
+                println("CREDENTIALS: ", credentialsFile, "\t", isfile(credentialsFile))
+                println("SCOPEURLS: ", scopeUrls)
+
                 flow = InstalledAppFlow.from_client_secrets_file(credentialsFile, scopeUrls)
                 creds = flow.run_local_server(port=0)
             end
