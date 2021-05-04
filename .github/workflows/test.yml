@@ -42,7 +42,7 @@ jobs:
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
           TEST1: ${{ secrets.TEST1 }}
           TEST2: "XYZ"
-        run: echo "DEBUG\n" > $HOME/test.txt && echo "$TEST1" >> $HOME/test.txt && echo "$TEST2" >> $HOME/test.txt && cat $HOME/test.txt
+        run: echo "DEBUG\n" > $HOME/test.txt && echo "--$TEST1--" >> $HOME/test.txt && echo "--$TEST2--" >> $HOME/test.txt && cat $HOME/test.txt
       - name: "Configure credentials"
         shell: bash
         env:
