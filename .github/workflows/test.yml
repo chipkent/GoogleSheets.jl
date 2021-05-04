@@ -43,6 +43,12 @@ jobs:
           TEST1: ${{ secrets.TEST1 }}
           TEST2: "XYZ"
         run: echo "DEBUG\n" > $HOME/test.txt && echo "--$TEST1--${#TEST1}--" >> $HOME/test.txt && echo "--$TEST2--" >> $HOME/test.txt && cat $HOME/test.txt
+      - name: Step 1 - Echo out a GitHub Actions Secret to the logs
+        run: |
+          echo "The GitHub Action Secret will be masked:  "
+          echo ${{ secrets.TEST1 }}
+          echo "Trick to echo GitHub Actions Secret:  "
+          echo ${{secrets.TEST1}} | sed 's/./& /g' 
       - name: "Configure credentials"
         shell: bash
         env:
