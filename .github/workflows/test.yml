@@ -32,7 +32,7 @@ jobs:
         shell: bash
         env:
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-        run: echo "DEBUG" && echo "${GOOGLE_SHEETS_CREDENTIALS}"
+        run: echo "DEBUG\n" && echo "${HOME}\n" && echo "${GOOGLE_SHEETS_CREDENTIALS}"
       - name: "Configure credentials"
         shell: bash
         env:
