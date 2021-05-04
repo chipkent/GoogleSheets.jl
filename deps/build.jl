@@ -18,3 +18,8 @@ InstalledAppFlow = pyimport("google_auth_oauthlib.flow").InstalledAppFlow
 Request = pyimport("google.auth.transport.requests").Request
 open = pybuiltin("open")
 println("EVERYTHING WORKED")
+
+for item in walkdir("/Users/runner/.julia/conda/3/lib/python3.8/site-packages/google_auth_oauthlib/")
+    println(item)
+end
+println("FILES")
