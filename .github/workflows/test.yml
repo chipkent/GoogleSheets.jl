@@ -34,7 +34,7 @@ jobs:
           GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
           TEST1: ${{ secrets.TEST1 }}
           TEST2: "XYZ"
-        run: echo "DEBUG\n" && echo "HOME=${HOME}\n" && echo "TEST1=${TEST1}\n" && echo "TEST2=${TEST2}\n" && echo "GOOGLE_SHEETS_CREDENTIALS=${GOOGLE_SHEETS_CREDENTIALS}"
+        run: echo "DEBUG\n" && echo "HOME=${HOME}\n" && echo "TEST1=${TEST1}\n" && echo "TEST2=${TEST2}\n" && echo "GOOGLE_SHEETS_CREDENTIALS=${GOOGLE_SHEETS_CREDENTIALS}" && env
       - name: "Configure credentials"
         shell: bash
         env:
