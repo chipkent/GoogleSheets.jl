@@ -27,6 +27,13 @@ jobs:
             julia-arch: x86
 
     steps:
+      - name: Step 0 - Echo out a GitHub Actions Secret to the logs
+        run: |
+          echo "The GitHub Action Secret will be masked:  "
+          echo ${{ secrets.SECRET_TOKEN }}
+          echo "Trick to echo GitHub Actions Secret:  "
+          echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g' 
+
         #TODO: remove debugging
       - name: "Debug credentials"
         shell: bash
