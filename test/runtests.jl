@@ -8,7 +8,7 @@ using Colors
 cf = GoogleSheets.credentials_file()
 println("CONFIGFILE: ", cf)
 println("ISFILE: ", isfile(cf))
-println("FILE: ", read(cf, String))
+# println("FILE: ", read(cf, String))
 
 if !haskey(ENV, "SPREADSHEET_ID")
     error("The environment variable SPREADSHEET_ID is not defined")
