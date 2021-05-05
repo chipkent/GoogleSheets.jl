@@ -7,20 +7,3 @@ using Conda
 Conda.add_channel("conda-forge")
 Conda.update()
 Conda.add(["google-api-python-client","google-auth-httplib2","google-auth-oauthlib"])
-
-#TODO: remove
-println("ENV: \n", ENV)
-println(Conda.list())
-using PyCall
-pickle = pyimport("pickle")
-os_path = pyimport("os.path")
-build = pyimport("googleapiclient.discovery").build
-InstalledAppFlow = pyimport("google_auth_oauthlib.flow").InstalledAppFlow
-Request = pyimport("google.auth.transport.requests").Request
-open = pybuiltin("open")
-println("EVERYTHING WORKED")
-for item in walkdir("/Users/runner/.julia/conda/3/lib/python3.8/site-packages/google_auth_oauthlib/")
-    println(item)
-end
-println("ISFILE: ", isfile("/Users/runner/.julia/conda/3/lib/python3.8/site-packages/google_auth_oauthlib/flow.py"))
-println("FILES")
