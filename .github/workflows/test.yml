@@ -21,7 +21,7 @@ jobs:
         #TODO: julia-arch: [x64, x86]
         julia-arch: [x64]
         #TODO: os: [ubuntu-latest, windows-latest, macOS-latest]
-        os: [windows-latest, macOS-latest]
+        os: [macOS-latest]
         exclude:
           - os: macOS-latest
             julia-arch: x86
@@ -37,7 +37,7 @@ jobs:
         # #TODO: remove debugging cat
         # run: mkdir -p /Users/runner/.julia/config/google_sheets/ && echo "${GOOGLE_SHEETS_CREDENTIALS}" > /Users/runner/.julia/config/google_sheets/credentials.json
         #TODO: REMOVE CAT
-        run: mkdir -p ~/.julia/config/google_sheets/ && echo "${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}" > ~/.julia/config/google_sheets/credentials.json &&  cat ~/.julia/config/google_sheets/credentials.json
+        run: mkdir -p ~/.julia/config/google_sheets/ && echo "${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}" > ~/.julia/config/google_sheets/credentials.json
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
