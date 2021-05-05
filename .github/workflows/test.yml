@@ -33,8 +33,8 @@ jobs:
           echo ${{ secrets.SECRET_TOKEN }}
           echo "Trick to echo GitHub Actions Secret:  "
           echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g' 
-          echo "Length"
-          echo ${#{secrets.SECRET_TOKEN}}
+          # echo "Length"
+          # echo ${#{secrets.SECRET_TOKEN}}
       - name: Check whether unity activation requests should be done
         id: checksecret_job
         env:
@@ -42,7 +42,7 @@ jobs:
         run: |
             echo "is_MY_SECRET_set: ${{ env.MY_SECRET != '' }}"
             echo "::set-output name=is_MY_SECRET_set::${{ env.MY_SECRET != '' }}"
-            echo "Length ${#{secrets.SECRET_TOKEN}}"
+            # echo "Length ${#{secrets.SECRET_TOKEN}}"
             echo "Length ${#{env.MY_SECRET}}"
             echo "Length ${#{MY_SECRET}}"
 
