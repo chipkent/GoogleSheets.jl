@@ -5,8 +5,8 @@ using ColorTypes
 using Colors
 
 # #TODO: remove this 
-println("ISFILE: ", isfile("/Users/runner/.julia/config/google_sheets/credentials.json"))
-println("FILE: ", read("/Users/runner/.julia/config/google_sheets/credentials.json", String))
+println("ISFILE: ", isfile("~/.julia/config/google_sheets/credentials.json"))
+println("FILE: ", read("~/.julia/config/google_sheets/credentials.json", String))
 
 if !haskey(ENV, "SPREADSHEET_ID")
     error("The environment variable SPREADSHEET_ID is not defined")
