@@ -5,23 +5,12 @@ using ColorTypes
 using Colors
 
 # #TODO: remove this 
-# import Pkg; Pkg.add("Conda")
-# using Conda
-# println(Conda.list())
-using PyCall
-pickle = pyimport("pickle")
-os_path = pyimport("os.path")
-build = pyimport("googleapiclient.discovery").build
-InstalledAppFlow = pyimport("google_auth_oauthlib.flow").InstalledAppFlow
-Request = pyimport("google.auth.transport.requests").Request
-open = pybuiltin("open")
-println("EVERYTHING WORKED")
-for item in walkdir("/Users/runner/.julia/conda/3/lib/python3.8/site-packages/google_auth_oauthlib/")
-    println(item)
-end
-println("ISFILE: ", isfile("/Users/runner/.julia/conda/3/lib/python3.8/site-packages/google_auth_oauthlib/flow.py"))
-println("FILES")
+println("ISFILE: ", isfile("/Users/runner/.julia/config/google_sheets/credentials.json"))
+println("FILE: ", read("/Users/runner/.julia/config/google_sheets/credentials.json", String))
 
+if !haskey(ENV, "SPREADSHEET_ID")
+    error("The environment variable SPREADSHEET_ID is not defined")
+end
 
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
