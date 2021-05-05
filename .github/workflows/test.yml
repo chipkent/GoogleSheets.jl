@@ -25,56 +25,18 @@ jobs:
         exclude:
           - os: macOS-latest
             julia-arch: x86
+    # Sets the environment to pull secrets from
     environment: tests
 
     steps:
-      - name: Step 0 - Echo out a GitHub Actions Secret to the logs
-        run: |
-          echo "The GitHub Action Secret will be masked:  "
-          echo ${{ secrets.SECRET_TOKEN }}
-          echo "Trick to echo GitHub Actions Secret:  "
-          echo ${{secrets.SECRET_TOKEN}} | sed 's/./& /g' 
-          # echo "Length"
-          # echo ${#{secrets.SECRET_TOKEN}}
-      - name: Check whether unity activation requests should be done
-        id: checksecret_job
-        env:
-            MY_SECRET: ${{ secrets.SECRET_TOKEN }}
-        run: |
-            echo "is_MY_SECRET_set: ${{ env.MY_SECRET != '' }}"
-            echo "::set-output name=is_MY_SECRET_set::${{ env.MY_SECRET != '' }}"
-            # echo "Length ${#{secrets.SECRET_TOKEN}}"
-            # echo "Length ${#{env.MY_SECRET}}"
-            # echo "Length ${#{MY_SECRET}}"
-
-        #TODO: remove debugging
-      - name: "Debug credentials"
-        shell: bash
-        env:
-          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-          TEST1: ${{ secrets.TEST1 }}
-          TEST2: "XYZ"
-        run: echo "DEBUG\n" && echo "HOME=${HOME}\n" && echo "TEST1=${TEST1}\n" && echo "TEST2=${TEST2}\n" && echo "GOOGLE_SHEETS_CREDENTIALS=${GOOGLE_SHEETS_CREDENTIALS}" && env
-        #TODO: remove debugging
-      - name: "Debug credentials 2"
-        shell: bash
-        env:
-          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-          TEST1: ${{ secrets.TEST1 }}
-          TEST2: "XYZ"
-        run: echo "DEBUG\n" > $HOME/test.txt && echo "--$TEST1--${#TEST1}--" >> $HOME/test.txt && echo "--$TEST2--" >> $HOME/test.txt && cat $HOME/test.txt
-      - name: Step 1 - Echo out a GitHub Actions Secret to the logs
-        run: |
-          echo "The GitHub Action Secret will be masked:  "
-          echo ${{ secrets.TEST1 }}
-          echo "Trick to echo GitHub Actions Secret:  "
-          echo ${{secrets.TEST1}} | sed 's/./& /g' 
       - name: "Configure credentials"
         shell: bash
-        env:
-          GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
-        #TODO: remove debugging cat
-        run: mkdir -p /Users/runner/.julia/config/google_sheets/ && echo "${GOOGLE_SHEETS_CREDENTIALS}" > /Users/runner/.julia/config/google_sheets/credentials.json && cat /Users/runner/.julia/config/google_sheets/credentials.json
+        #TODO cleanup
+        # env:
+        #   GOOGLE_SHEETS_CREDENTIALS: ${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}
+        # #TODO: remove debugging cat
+        # run: mkdir -p /Users/runner/.julia/config/google_sheets/ && echo "${GOOGLE_SHEETS_CREDENTIALS}" > /Users/runner/.julia/config/google_sheets/credentials.json
+        run: mkdir -p /Users/runner/.julia/config/google_sheets/ && echo "${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}" > /Users/runner/.julia/config/google_sheets/credentials.json
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
