@@ -1,8 +1,10 @@
 
 # GoogleSheets.jl Documentation
 
-<!-- ```@contents
-``` -->
+<!-- 
+```@contents
+``` 
+-->
 
 ## Enums
 
