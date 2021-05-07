@@ -11,17 +11,6 @@
 AuthScope
 ```
 
-```@docs
-ValueType
-```
-
-```@docs
-ConditionType
-```
-
-```@docs
-NumberFormatType
-```
 
 
 ## Types
