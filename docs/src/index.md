@@ -69,7 +69,7 @@ CellFormat
 DataFrame
 ```
 
-<!-- ## Functions
+## Functions
 
 ```@docs
 sheets_client
@@ -157,7 +157,7 @@ GoogleSheets.update_default_rate_limiter
 
 ```@docs
 GoogleSheets.credentials_file
-``` -->
+```
 
 
 <!-- ## Index
