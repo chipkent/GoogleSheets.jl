@@ -97,7 +97,7 @@ A Google Sheets number format type.
 
 NUMBER_FORMAT_TYPE_TEXT	Text formatting, e.g 1000.12
 NUMBER_FORMAT_TYPE_NUMBER	Number formatting, e.g, 1,000.12
-NUMBER_FORMAT_TYPE_PERCENT	Percent formatting, e.g 10.12%
+NUMBER_FORMAT_TYPE_PERCENT	Percent formatting, e.g 10.12\%
 NUMBER_FORMAT_TYPE_CURRENCY	Currency formatting, e.g \$1,000.12
 NUMBER_FORMAT_TYPE_DATE	Date formatting, e.g 9/26/2008
 NUMBER_FORMAT_TYPE_TIME	Time formatting, e.g 3:59:00 PM
