@@ -15,6 +15,10 @@ AuthScope
 ValueType
 ```
 
+```@docs
+ConditionType
+```
+
 
 ## Types
 
