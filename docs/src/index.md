@@ -11,6 +11,9 @@
 AuthScope
 ```
 
+```@docs
+ValueType
+```
 
 
 ## Types
