@@ -5,23 +5,52 @@
 ``` 
 
 
-## Enums
+## Types
 
 ```@docs
-AuthScope
+GoogleSheetsClient
 ```
 
 ```@docs
-ValueType
+Spreadsheet
 ```
 
 ```@docs
-ConditionType
+Sheet
 ```
 
 ```@docs
-NumberFormatType
+CellRange
 ```
+
+```@docs
+CellRanges
+```
+
+```@docs
+CellRangeValues
+```
+
+```@docs
+UpdateSummary
+```
+
+```@docs
+CellIndexRange1D
+```
+
+```@docs
+CellIndexRange2D
+```
+
+```@docs
+CellFormat
+```
+
+```@docs
+DataFrame
+```
+
 
 ## Index
 
