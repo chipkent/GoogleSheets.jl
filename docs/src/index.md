@@ -160,7 +160,7 @@ GoogleSheets.credentials_file
 ```
 
 
-<!-- ## Index
+## Index
 
 ```@index
-``` -->
+```
