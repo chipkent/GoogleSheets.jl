@@ -19,6 +19,10 @@ ValueType
 ConditionType
 ```
 
+```@docs
+NumberFormatType
+```
+
 
 ## Types
 
