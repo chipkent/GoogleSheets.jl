@@ -5,6 +5,23 @@
 ``` 
 
 
+## Enums
+
+```@docs
+AuthScope
+```
+
+```@docs
+ValueType
+```
+
+```@docs
+ConditionType
+```
+
+```@docs
+NumberFormatType
+```
 
 ## Index
 
