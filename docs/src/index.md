@@ -23,7 +23,7 @@ NumberFormatType
 ```
 
 
-## Types
+<!-- ## Types
 
 ```@docs
 GoogleSheetsClient
@@ -152,12 +152,12 @@ format_color_gradient!
 ```
 
 ```@docs
-update_default_rate_limiter
+GoogleSheets.update_default_rate_limiter
 ```
 
 ```@docs
-credentials_file
-```
+GoogleSheets.credentials_file
+``` -->
 
 
 ## Index
