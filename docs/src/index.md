@@ -151,6 +151,14 @@ format_conditional!
 format_color_gradient!
 ```
 
+```@docs
+update_default_rate_limiter
+```
+
+```@docs
+credentials_file
+```
+
 
 ## Index
 
