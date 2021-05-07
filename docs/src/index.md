@@ -5,6 +5,25 @@
 ``` 
 
 
+## Enums
+
+```@docs
+AuthScope
+```
+
+```@docs
+ValueType
+```
+
+```@docs
+ConditionType
+```
+
+```@docs
+NumberFormatType
+```
+
+
 ## Types
 
 ```@docs
@@ -141,6 +160,7 @@ GoogleSheets.update_default_rate_limiter
 ```@docs
 GoogleSheets.credentials_file
 ```
+
 
 ## Index
 
