@@ -4,7 +4,7 @@
 ```@contents
 ```
 
-## Enums
+<!-- ## Enums
 
 ```@docs
 AuthScope
@@ -23,7 +23,7 @@ NumberFormatType
 ```
 
 
-<!-- ## Types
+## Types
 
 ```@docs
 GoogleSheetsClient
