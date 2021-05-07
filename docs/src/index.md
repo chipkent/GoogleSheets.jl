@@ -1,8 +1,8 @@
 
 # GoogleSheets.jl Documentation
 
-```@contents
-```
+<!-- ```@contents
+``` -->
 
 <!-- ## Enums
 
@@ -160,7 +160,7 @@ GoogleSheets.credentials_file
 ``` -->
 
 
-## Index
+<!-- ## Index
 
 ```@index
-```
+``` -->
