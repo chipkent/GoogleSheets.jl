@@ -23,7 +23,7 @@ NumberFormatType
 ```
 
 
-<!-- ## Types
+## Types
 
 ```@docs
 GoogleSheetsClient
@@ -69,7 +69,7 @@ CellFormat
 DataFrame
 ```
 
-## Functions
+<!-- ## Functions
 
 ```@docs
 sheets_client
