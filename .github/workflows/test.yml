@@ -16,12 +16,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #TODO: julia-version: ['1.5', '1', 'nightly']
-        julia-version: ['1.5']
-        #TODO: julia-arch: [x64, x86]
-        julia-arch: [x64]
-        #TODO: os: [ubuntu-latest, windows-latest, macOS-latest]
-        os: [macOS-latest]
+        julia-version: ['1.5', '1', 'nightly']
+        julia-arch: [x64, x86]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
         exclude:
           - os: macOS-latest
             julia-arch: x86
