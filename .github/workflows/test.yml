@@ -29,9 +29,9 @@ jobs:
     environment: tests
 
     steps:
-      # - name: "Configure credentials"
-      #   shell: bash
-      #   run: mkdir -p ~/.julia/config/google_sheets/ && echo "${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}" > ~/.julia/config/google_sheets/credentials.json
+      - name: "Configure credentials"
+        shell: bash
+        run: mkdir -p ~/.julia/config/google_sheets/ && echo "${{ secrets.GOOGLE_SHEETS_CREDENTIALS }}" > ~/.julia/config/google_sheets/credentials.json
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
