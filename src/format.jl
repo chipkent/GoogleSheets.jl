@@ -3,6 +3,8 @@ export format!, format_conditional!, format_color_gradient!
 
 
 """
+    format!(client::GoogleSheetsClient, range::CellIndexRange2D, format::CellFormat)::Dict{Any,Any}
+
 Formats a range of cells.
 """
 function format!(client::GoogleSheetsClient, range::CellIndexRange2D, format::CellFormat)::Dict{Any,Any}
@@ -26,6 +28,9 @@ end
 
 
 """
+    format_conditional!(client::GoogleSheetsClient, range::CellIndexRange2D, format::CellFormat, 
+        condition_type::ConditionType, values...)::Dict{Any,Any}
+
 Formats a range of cells if a condition is met.
 """
 function format_conditional!(client::GoogleSheetsClient, range::CellIndexRange2D, format::CellFormat, 
@@ -55,6 +60,11 @@ end
 
 
 """
+    format_color_gradient!(client::GoogleSheetsClient, range::CellIndexRange2D; 
+        min_color::Colorant=colorant"salmon", min_value_type::ValueType=VALUE_TYPE_MIN, min_value::Union{Nothing,Number}=nothing, 
+        mid_color::Union{Nothing,Colorant}=nothing, mid_value_type::Union{Nothing,ValueType}=nothing, mid_value::Union{Nothing,Number}=nothing, 
+        max_color::Colorant=colorant"springgreen", max_value_type::ValueType=VALUE_TYPE_MAX, max_value::Union{Nothing,Number}=nothing)::Dict{Any,Any}
+
 Sets color gradient formatting.
 """
 function format_color_gradient!(client::GoogleSheetsClient, range::CellIndexRange2D; 

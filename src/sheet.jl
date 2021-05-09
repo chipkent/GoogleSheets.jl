@@ -2,6 +2,8 @@ export freeze!, append!, insert_rows!, insert_cols!, delete_rows!, delete_cols!
 
 
 """
+    freeze!(client::GoogleSheetsClient, sheet::Sheet, rows::Int64=0, cols::Int64=0)::Dict{Any,Any}
+
 Freeze rows and columns in a sheet.
 """
 function freeze!(client::GoogleSheetsClient, sheet::Sheet, rows::Int64=0, cols::Int64=0)::Dict{Any,Any}
@@ -38,6 +40,8 @@ end
 
 
 """
+    append!(client::GoogleSheetsClient, sheet::Sheet, rows::Int64=0, cols::Int64=0)::Dict{Any,Any}
+
 Append rows and columns to a sheet.
 """
 function Base.append!(client::GoogleSheetsClient, sheet::Sheet, rows::Int64=0, cols::Int64=0)::Dict{Any,Any}
@@ -66,6 +70,8 @@ end
 
 
 """
+    insert_rows!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
+
 Insert rows into to a sheet.
 """
 function insert_rows!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
@@ -74,6 +80,8 @@ end
 
 
 """
+    insert_cols!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
+
 Insert columns into to a sheet.
 """
 function insert_cols!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
@@ -108,6 +116,8 @@ end
 
 
 """
+    delete_cols!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}
+
 Delete columns from a sheet.
 """
 function delete_cols!(client::GoogleSheetsClient, range::CellIndexRange1D)::Dict{Any,Any}

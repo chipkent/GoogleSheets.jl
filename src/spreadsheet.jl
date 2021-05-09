@@ -2,6 +2,8 @@ export sheet_names, sheets, batch_update!, add_sheet!, delete_sheet!
 
 
 """
+    sheet_names(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{String}
+
 Gets the names of the sheets in the spreadsheet.
 """
 function sheet_names(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{String}
@@ -11,6 +13,8 @@ end
 
 
 """
+    sheets(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{Sheet}
+
 Gets the sheets in the spreadsheet.
 """
 function sheets(client::GoogleSheetsClient, spreadsheet::Spreadsheet)::Vector{Sheet}
@@ -20,6 +24,8 @@ end
 
 
 """
+    batch_update!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, body::Dict)::Dict{Any,Any}
+
 Applies one or more updates to a spreadsheet.
 
 Each request is validated before being applied. If any request is not valid then
@@ -38,6 +44,8 @@ end
 
 
 """
+    add_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+
 Adds a new sheet to a spreadsheet.
 """
 function add_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
@@ -59,6 +67,8 @@ end
 
 #TODO: make this use sheet??
 """
+    delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
+
 Removes a sheet from a spreadsheet.
 """
 function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)::Dict{Any,Any}
@@ -70,6 +80,8 @@ end
 
 #TODO: make this use sheet??
 """
+    delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)::Dict{Any,Any}
+
 Removes a sheet from a spreadsheet.
 """
 function delete_sheet!(client::GoogleSheetsClient, spreadsheet::Spreadsheet, sheet_id::Int64)::Dict{Any,Any}

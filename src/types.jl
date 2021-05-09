@@ -42,12 +42,16 @@ end
 
 
 """
+    Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, id::Int64)
+
 A sheet in a spreadsheet.
 """
 Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, id::Int64) = Sheet(spreadsheet, id, meta(client, spreadsheet, id)["title"])
 
 
 """
+    Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)
+
 A sheet in a spreadsheet.
 """
 Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString) = Sheet(spreadsheet, meta(client, spreadsheet, title)["sheetId"], title)
@@ -177,6 +181,9 @@ struct CellFormat
     """ Text font size. """
     text_font_size::Union{Nothing,Real}
 
+    """
+    Formatting for a cell.
+    """
     CellFormat(;
         background_color=nothing,
         number_format_type=nothing,

@@ -20,6 +20,8 @@ default_rate_limiter_write = TokenBucketRateLimiter(default_rate_limiter_tokens_
 
 
 """
+    update_default_rate_limiter(rate_limiter_tokens_per_sec::Float64; rate_limiter_max_tokens::Float64=5)
+
 Update the default rate limiter.
 """
 function update_default_rate_limiter(rate_limiter_tokens_per_sec::Float64; rate_limiter_max_tokens::Float64=5)
@@ -29,6 +31,8 @@ end
 
 
 """
+    update_default_rate_limiter(rate_limiter_read::AbstractRateLimiter, rate_limiter_write::AbstractRateLimiter)
+
 Update the default rate limiter.
 """
 function update_default_rate_limiter(rate_limiter_read::AbstractRateLimiter, rate_limiter_write::AbstractRateLimiter)
@@ -90,6 +94,8 @@ end
 
 
 """
+    credentials_file()::String
+
 Gets the credentials file needed to log into Google.
 The file is loaded from the GOOGLE_SHEETS_CREDENTIALS environment variable
 if it is present; otherwise, it is loaded from the configuration directory,
@@ -139,6 +145,10 @@ end
 
 
 """
+    sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}}; 
+        rate_limiter_read::AbstractRateLimiter=default_rate_limiter_read, 
+        rate_limiter_write::AbstractRateLimiter=default_rate_limiter_write)::GoogleSheetsClient
+
 Creates a client for accessing Google Sheets.
 """
 function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}}; 
@@ -193,6 +203,8 @@ end
 
 
 """
+    gsheet_api_spreadsheet_get(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets spreadsheet-get API.
 """
 function gsheet_api_spreadsheet_get(client::GoogleSheetsClient; kwargs...)
@@ -203,6 +215,8 @@ end
 
 
 """
+    gsheet_api_sheet_get(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets sheet-get API.
 """
 function gsheet_api_sheet_get(client::GoogleSheetsClient; kwargs...)
@@ -213,6 +227,8 @@ end
 
 
 """
+    gsheet_api_sheet_batchget(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets sheet-batchGet API.
 """
 function gsheet_api_sheet_batchget(client::GoogleSheetsClient; kwargs...)
@@ -223,6 +239,8 @@ end
 
 
 """
+    gsheet_api_sheet_update(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets sheet-update API.
 """
 function gsheet_api_sheet_update(client::GoogleSheetsClient; kwargs...)
@@ -233,6 +251,8 @@ end
 
 
 """
+    gsheet_api_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets spreadsheet-batchUpdate API.
 """
 function gsheet_api_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)

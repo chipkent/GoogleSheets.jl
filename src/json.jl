@@ -1,6 +1,8 @@
 
 
 """
+    gsheet_json(color::Colorant)
+
 Returns a dictionary of values to describe a color.
 """
 function gsheet_json(color::Colorant)
@@ -15,6 +17,8 @@ end
 
 
 """
+    gsheet_json(range::CellIndexRange1D, dim::AbstractString)
+
 Returns a dictionary of values to describe a CellIndexRange1D.
 """
 function gsheet_json(range::CellIndexRange1D, dim::AbstractString)
@@ -28,6 +32,8 @@ end
 
 
 """
+    gsheet_json(range::CellIndexRange2D)
+
 Returns a dictionary of values to describe a CellIndexRange2D.
 """
 function gsheet_json(range::CellIndexRange2D)
@@ -42,6 +48,8 @@ end
 
 
 """
+    gsheet_json(format::CellFormat)
+
 Returns a dictionary of values to describe a Format.
 """
 function gsheet_json(format::CellFormat)
