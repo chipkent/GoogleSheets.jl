@@ -4,11 +4,6 @@ using GoogleSheets: CellRangeValues, UpdateSummary
 using ColorTypes
 using Colors
 
-# #TODO: remove this 
-cf = GoogleSheets.credentials_file()
-println("CONFIGFILE: ", cf)
-println("ISFILE: ", isfile(cf))
-
 if !haskey(ENV, "SPREADSHEET_ID")
     error("The environment variable SPREADSHEET_ID is not defined")
 end
