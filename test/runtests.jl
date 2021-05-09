@@ -13,11 +13,7 @@ if !haskey(ENV, "SPREADSHEET_ID")
     error("The environment variable SPREADSHEET_ID is not defined")
 end
 
-println("DBG 1")
-
 client = sheets_client(AUTH_SCOPE_READWRITE)
-
-println("DBG 1.1")
 
 spreadsheet_id = ENV["SPREADSHEET_ID"]
 spreadsheet = Spreadsheet(spreadsheet_id)
@@ -46,8 +42,6 @@ Base.:(==)(x::CellRangeValues, y::CellRangeValues) = x.range == y.range && x.val
 
 ################################################################################
 
-println("DBG 2")
-
 values = ["A" "B" "C"; "1" "2" "3"; "4" "5" "6"]
 crv = CellRangeValues(CellRange(spreadsheet, "$(sheet_name)!A1:"), values, "TEST_DIM")
 df = DataFrame(crv)
@@ -55,11 +49,7 @@ df = DataFrame(crv)
 
 ################################################################################
 
-println("DBG 3")
-
 init_test(add_values=false)
-
-println("DBG 4")
 
 # Get the empty sheet
 result = get(client, CellRange(spreadsheet, sheet_name))
@@ -74,11 +64,7 @@ result = get(client, CellRange(spreadsheet, sheet_name))
 
 ################################################################################
 
-println("DBG 5")
-
 init_test(add_values=false)
-
-println("DBG 6")
 
 # Get the empty sheet
 result = get(client, CellRange(spreadsheet, sheet_name))
@@ -98,11 +84,7 @@ result = get(client, CellRanges(spreadsheet, ["$(sheet_name)!A1:B2", "$(sheet_na
 
 ################################################################################
 
-println("DBG 7")
-
 init_test()
-
-println("DBG 8")
 
 # Add rows and columns to the sheet
 sheet = Sheet(client, spreadsheet, sheet_name)
@@ -112,11 +94,7 @@ result = get(client, CellRange(spreadsheet, sheet_name))
 
 ################################################################################
 
-println("DBG 9")
-
 init_test()
-
-println("DBG 10")
 
 # Insert rows
 sheet = Sheet(client, spreadsheet, sheet_name)
@@ -135,11 +113,7 @@ values = fill("11", 5, 5)
 
 ################################################################################
 
-println("DBG 11")
-
 init_test()
-
-println("DBG 12")
 
 # Insert columns
 sheet = Sheet(client, spreadsheet, sheet_name)
@@ -158,11 +132,7 @@ values = fill("11", 5, 5)
 
 ################################################################################
 
-println("DBG 13")
-
 init_test()
-
-println("DBG 14")
 
 result = clear!(client, CellRange(spreadsheet, "$(sheet_name)!B2:C3"))
 @test result == UpdateSummary(CellRange(spreadsheet, "$(sheet_name)!B2:C3"), 2, 2, 4)
@@ -178,11 +148,7 @@ result = get(client, CellRange(spreadsheet, sheet_name))
 
 ################################################################################
 
-println("DBG 15")
-
 init_test()
-
-println("DBG 16")
 
 sheet = Sheet(client, spreadsheet, sheet_name)
 freeze!(client, sheet, 2, 3)
@@ -212,11 +178,7 @@ show(client, sheet)
 
 ################################################################################
 
-println("DBG 17")
-
 init_test()
-
-println("DBG 18")
 
 sheet = Sheet(client, spreadsheet, sheet_name)
 
@@ -241,4 +203,3 @@ format_color_gradient!(client, CellIndexRange2D(sheet, 4, 5, 1, 2); min_value_ty
 
 ################################################################################
 
-println("DBG 19")
