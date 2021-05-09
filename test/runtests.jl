@@ -17,6 +17,8 @@ println("DBG 1")
 
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
+println("DBG 1.1")
+
 spreadsheet_id = ENV["SPREADSHEET_ID"]
 spreadsheet = Spreadsheet(spreadsheet_id)
 sheet_name = "TestSheet"
