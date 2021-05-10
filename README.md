@@ -46,10 +46,8 @@ Key functions:
 
 To install:
 
-    ```
     pkg] add GoogleSheets
     pkg] build GoogleSheets
-    ```
 
 To use:
 1. Create a Google Sheets API token from either the [python quick start reference](https://developers.google.com/sheets/api/quickstart/python) or the [developers console](https://console.developers.google.com/apis/credentials).
