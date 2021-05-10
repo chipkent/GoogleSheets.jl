@@ -4,13 +4,14 @@ using GoogleSheets: CellRangeValues, UpdateSummary
 using ColorTypes
 using Colors
 
-if !haskey(ENV, "SPREADSHEET_ID")
-    error("The environment variable SPREADSHEET_ID is not defined")
+spreadsheet_id = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
+
+if haskey(ENV, "SPREADSHEET_ID")
+    spreadsheet_id = ENV["SPREADSHEET_ID"]
 end
 
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
-spreadsheet_id = ENV["SPREADSHEET_ID"]
 spreadsheet = Spreadsheet(spreadsheet_id)
 sheet_name = "TestSheet"
 
