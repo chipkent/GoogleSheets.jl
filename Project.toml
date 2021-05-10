@@ -11,3 +11,6 @@ JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 RateLimiter = "24b76ae0-009b-4410-993f-7a05b90d7239"
+
+[compat]
+julia = "^1.5"
