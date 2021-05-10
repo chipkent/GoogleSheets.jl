@@ -1,41 +1,48 @@
+<!-- ![Test](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/test.yml/badge.svg) -->
+![Register](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/register.yml/badge.svg)
+![Document](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/document.yml/badge.svg)
+![Compat Helper](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/compathelper.yml/badge.svg)
+![Tagbot](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/tagbot.yml/badge.svg)
+
 # GoogleSheets.jl
 
-Julia package for working with Google Sheets.
+Julia package for working with Google Sheets.  You can perform expected actions such as adding sheets,
+removing sheets, reading from sheets, writing to sheets, and formatting sheets.
 
 Key types:
-* GoogleSheetsClient
-* Spreadsheet
-* Sheet
-* CellRange
-* CellRanges
-* CellRangeValues
-* UpdateSummary
-* CellIndexRange1D
-* CellIndexRange2D
-* CellFormat
-* DataFrame
+* `GoogleSheetsClient`
+* `Spreadsheet`
+* `Sheet`
+* `CellRange`
+* `CellRanges`
+* `CellRangeValues`
+* `UpdateSummary`
+* `CellIndexRange1D`
+* `CellIndexRange2D`
+* `CellFormat`
+* `DataFrame`
 
 Key functions:
-* sheets_client
-* sheet_names
-* sheets
-* batch_update!
-* add_sheet!
-* delete_sheet!
-* freeze!
-* append!
-* insert_rows!
-* insert_cols!
-* delete_rows!
-* delete_cols!
-* meta
-* show
-* get
-* update!
-* clear!
-* format!
-* format_conditional!
-* format_color_gradient!
+* `sheets_client`
+* `sheet_names`
+* `sheets`
+* `batch_update!`
+* `add_sheet!`
+* `delete_sheet!`
+* `freeze!`
+* `append!`
+* `insert_rows!`
+* `insert_cols!`
+* `delete_rows!`
+* `delete_cols!`
+* `meta`
+* `show`
+* `get`
+* `update!`
+* `clear!`
+* `format!`
+* `format_conditional!`
+* `format_color_gradient!`
 
 To use:
 1. Create a Google Sheets API token from either the [python quick start reference](https://developers.google.com/sheets/api/quickstart/python) or the [developers console](https://console.developers.google.com/apis/credentials).
@@ -160,3 +167,9 @@ delete_cols!(client, CellIndexRange1D(Sheet(client, sheet, "test sheet"), 2, 3))
 
 clear!(client, CellRange(sheet, "test sheet!B2:C3"))
 ```
+
+## Documentation
+
+See [https://chipkent.github.io/GoogleSheets.jl/dev/](https://chipkent.github.io/GoogleSheets.jl/dev/).
+
+Pull requests will publish documentation to <code>https://chipkent.github.io/GoogleSheets.jl/previews/PR##</code>.

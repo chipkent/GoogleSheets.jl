@@ -1,0 +1,40 @@
+#
+# Generate Documenter documentation.
+#
+# https://github.com/marketplace/actions/deploy-package-documentation
+#
+# ***** You need DOCUMENTER_KEY and a deployment key for deployement, which you can generate using DocumenterTools:
+#
+# ***** julia> using DocumenterTools, YourPackage
+# ***** julia> DocumenterTools.genkeys(YourPackage)
+#
+# The output of this command will contain both keys as well as instructions on deploying the keys.
+#
+# ***** NOTE: GitHub pages must be enabled in the project settings.
+#
+# URL is usually https://USERNAME.github.io/PROJECT/dev/.
+
+name: Documenter
+on:
+  push:
+    branches: [main]
+    tags: [v*]
+  pull_request:
+
+jobs:
+  Documenter:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: 1
+      - uses: julia-actions/julia-buildpkg@latest
+      - run: julia --project=docs -e 'import Pkg; Pkg.add("Documenter")'
+      - uses: julia-actions/julia-docdeploy@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+    # Sets the environment to pull secrets from
+    environment: documenter

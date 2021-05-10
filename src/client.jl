@@ -20,7 +20,13 @@ default_rate_limiter_write = TokenBucketRateLimiter(default_rate_limiter_tokens_
 
 
 """
+    update_default_rate_limiter(rate_limiter_tokens_per_sec::Float64; rate_limiter_max_tokens::Float64=5)
+
 Update the default rate limiter.
+
+# Arguments
+- `rate_limiter_tokens_per_sec::Float64`: rate limiter number of tokens per second.
+- `rate_limiter_max_tokens::Float64=5`: rate limiter max number of tokens.
 """
 function update_default_rate_limiter(rate_limiter_tokens_per_sec::Float64; rate_limiter_max_tokens::Float64=5)
     global default_rate_limiter_read = TokenBucketRateLimiter(rate_limiter_tokens_per_sec, rate_limiter_max_tokens, rate_limiter_max_tokens)
@@ -29,7 +35,13 @@ end
 
 
 """
+    update_default_rate_limiter(rate_limiter_read::AbstractRateLimiter, rate_limiter_write::AbstractRateLimiter)
+
 Update the default rate limiter.
+
+# Arguments
+- `rate_limiter_read::AbstractRateLimiter`: rate limiter for reading.
+- `rate_limiter_write::AbstractRateLimiter`: rate limiter for writing.
 """
 function update_default_rate_limiter(rate_limiter_read::AbstractRateLimiter, rate_limiter_write::AbstractRateLimiter)
     global default_rate_limiter_read = rate_limiter_read
@@ -90,6 +102,8 @@ end
 
 
 """
+    credentials_file()::String
+
 Gets the credentials file needed to log into Google.
 The file is loaded from the GOOGLE_SHEETS_CREDENTIALS environment variable
 if it is present; otherwise, it is loaded from the configuration directory,
@@ -139,7 +153,16 @@ end
 
 
 """
+    sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}}; 
+        rate_limiter_read::AbstractRateLimiter=default_rate_limiter_read, 
+        rate_limiter_write::AbstractRateLimiter=default_rate_limiter_write)::GoogleSheetsClient
+
 Creates a client for accessing Google Sheets.
+
+# Arguments
+- `scopes::Union{AuthScope,Array{AuthScope,1}}`: authorization scopes.
+- `rate_limiter_read::AbstractRateLimiter=default_rate_limiter_read`: rate limiter for reading.
+- `rate_limiter_write::AbstractRateLimiter=default_rate_limiter_write`: rate limiter for writing.
 """
 function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}}; 
         rate_limiter_read::AbstractRateLimiter=default_rate_limiter_read, 
@@ -173,6 +196,10 @@ function sheets_client(scopes::Union{AuthScope,Array{AuthScope,1}};
             if !isnothing(creds) && creds.expired && !isnothing(creds.refresh_token)
                 creds.refresh(Request())
             else
+                if !isfile(credentialsFile)
+                    error("Credentials file not found: $credentialsFile")
+                end
+
                 flow = InstalledAppFlow.from_client_secrets_file(credentialsFile, scopeUrls)
                 creds = flow.run_local_server(port=0)
             end
@@ -189,7 +216,13 @@ end
 
 
 """
+    gsheet_api_spreadsheet_get(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets spreadsheet-get API.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `kwargs`: keyword arguments.
 """
 function gsheet_api_spreadsheet_get(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
@@ -199,7 +232,13 @@ end
 
 
 """
+    gsheet_api_sheet_get(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets sheet-get API.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `kwargs`: keyword arguments.
 """
 function gsheet_api_sheet_get(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
@@ -209,7 +248,13 @@ end
 
 
 """
+    gsheet_api_sheet_batchget(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets sheet-batchGet API.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `kwargs`: keyword arguments.
 """
 function gsheet_api_sheet_batchget(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_read 1 @_print_python_exception begin
@@ -219,7 +264,13 @@ end
 
 
 """
+    gsheet_api_sheet_update(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets sheet-update API.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `kwargs`: keyword arguments.
 """
 function gsheet_api_sheet_update(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_write 1 @_print_python_exception begin
@@ -229,7 +280,13 @@ end
 
 
 """
+    gsheet_api_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)
+
 GoogleSheets spreadsheet-batchUpdate API.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `kwargs`: keyword arguments.
 """
 function gsheet_api_speadsheet_batchupdate(client::GoogleSheetsClient; kwargs...)
     @rate_limit client.rate_limiter_write 1 @_print_python_exception begin

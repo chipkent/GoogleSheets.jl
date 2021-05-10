@@ -4,9 +4,14 @@ using GoogleSheets: CellRangeValues, UpdateSummary
 using ColorTypes
 using Colors
 
+spreadsheet_id = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
+
+if haskey(ENV, "SPREADSHEET_ID")
+    spreadsheet_id = ENV["SPREADSHEET_ID"]
+end
+
 client = sheets_client(AUTH_SCOPE_READWRITE)
 
-spreadsheet_id = "1pG4OyAdePAelCT2fSBTVJ9lVYo6M-ApuTyeEPz49DOM"
 spreadsheet = Spreadsheet(spreadsheet_id)
 sheet_name = "TestSheet"
 
@@ -193,3 +198,4 @@ format_color_gradient!(client, CellIndexRange2D(sheet, 4, 5, 1, 2))
 format_color_gradient!(client, CellIndexRange2D(sheet, 4, 5, 1, 2); min_value_type=VALUE_TYPE_NUMBER, min_value=-3, max_value_type=VALUE_TYPE_NUMBER, max_value=3, mid_color=colorant"white", mid_value_type=VALUE_TYPE_NUMBER, mid_value=0)
 
 ################################################################################
+

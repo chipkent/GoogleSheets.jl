@@ -1,9 +1,14 @@
+#
+# Create new tagged Julia package releases.
+#
+
 name: TagBot
 on:
   issue_comment:
     types:
       - created
   workflow_dispatch:
+
 jobs:
   TagBot:
     if: github.event_name == 'workflow_dispatch' || github.actor == 'JuliaTagBot'

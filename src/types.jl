@@ -42,13 +42,27 @@ end
 
 
 """
+    Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, id::Int64)
+
 A sheet in a spreadsheet.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `spreadsheet::Spreadsheet`: spreadsheet
+- `id::Int64`: sheet id
 """
 Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, id::Int64) = Sheet(spreadsheet, id, meta(client, spreadsheet, id)["title"])
 
 
 """
+    Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString)
+
 A sheet in a spreadsheet.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `spreadsheet::Spreadsheet`: spreadsheet
+- `title::AbstractString`: sheet title
 """
 Sheet(client::GoogleSheetsClient, spreadsheet::Spreadsheet, title::AbstractString) = Sheet(spreadsheet, meta(client, spreadsheet, title)["sheetId"], title)
 
@@ -177,6 +191,19 @@ struct CellFormat
     """ Text font size. """
     text_font_size::Union{Nothing,Real}
 
+    """
+    Formatting for a cell.
+
+    # Arguments
+    - `background_color=nothing`: background color
+    - `number_format_type=nothing`: number format
+    - `number_format_pattern=nothing`: number format pattern
+    - `text_italic=nothing`: is text italics
+    - `text_bold=nothing`: is text bold
+    - `text_strikethrough=nothing`: is text strikethrough
+    - `text_color=nothing`: text color
+    - `text_font_size=nothing`: text_font_size
+    """
     CellFormat(;
         background_color=nothing,
         number_format_type=nothing,
