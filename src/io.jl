@@ -5,6 +5,9 @@ export DataFrame, get, update!, clear!
     DataFrame(values::CellRangeValues)::Union{Nothing,DataFrame}
 
 Creates a DataFrame from spreadsheet range values.  The first row is converted to column names.  All other rows are converted to string values.
+
+# Arguments
+- `values::CellRangeValues`: cell values
 """
 DataFrame(values::CellRangeValues)::Union{Nothing,DataFrame} = values.values == nothing ? nothing : DataFrame([values.values[1,i]=>values.values[2:end,i] for i in 1:size(values.values,2)]...)
  
@@ -37,6 +40,10 @@ end
     get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
 
 Gets a range of cell values from a spreadsheet.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `range::CellRange`: cell range
 """
 function Base.get(client::GoogleSheetsClient, range::CellRange)::CellRangeValues
     result = gsheet_api_sheet_get(client; spreadsheetId=range.spreadsheet.id, majorDimension="ROWS", range=range.range)
@@ -48,6 +55,10 @@ end
     get(client::GoogleSheetsClient, ranges::CellRanges)::Vector{CellRangeValues}
 
 Gets multiple ranges of cell values from a spreadsheet.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `ranges::CellRanges`: cell ranges
 """
 function Base.get(client::GoogleSheetsClient, ranges::CellRanges)::Vector{CellRangeValues}
     result = gsheet_api_sheet_batchget(client; spreadsheetId=ranges.spreadsheet.id, majorDimension="ROWS", ranges=ranges.ranges)
@@ -117,6 +128,10 @@ end
     clear!(client::GoogleSheetsClient, range::CellRange)::UpdateSummary
 
 Clears a range of cell values in a spreadsheet.
+
+# Arguments
+- `client::GoogleSheetsClient`: client
+- `range::CellRange`: cell range
 """
 function clear!(client::GoogleSheetsClient, range::CellRange)::UpdateSummary
     v = get(client, range)
