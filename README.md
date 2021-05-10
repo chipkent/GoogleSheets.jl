@@ -45,6 +45,7 @@ Key functions:
 * `format_color_gradient!`
 
 To install:
+
     ```
     pkg] add GoogleSheets
     pkg] build GoogleSheets
