@@ -44,16 +44,22 @@ Key functions:
 * `format_conditional!`
 * `format_color_gradient!`
 
+## Install
+
 To install:
 
     pkg] add GoogleSheets
     pkg] build GoogleSheets
+
+## Use
 
 To use:
 1. Create a Google Sheets API token from either the [python quick start reference](https://developers.google.com/sheets/api/quickstart/python) or the [developers console](https://console.developers.google.com/apis/credentials).
 2. Place the Google Sheets API `credentials.json` file in `~/.julia/google_sheets/`.
 3. Connect to Google Sheets using `sheets_client`.
 4. See the scripts directory for examples of using the package.
+
+## Example
 
 An example reading data from a Google Sheet.  See `./scripts/example_read.jl`.
 
