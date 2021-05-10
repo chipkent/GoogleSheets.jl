@@ -1,4 +1,4 @@
-![Test](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/test.yml/badge.svg)
+<!-- ![Test](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/test.yml/badge.svg) -->
 ![Register](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/register.yml/badge.svg)
 ![Document](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/document.yml/badge.svg)
 ![Compat Helper](https://github.com/chipkent/GoogleSheets.jl/actions/workflows/compathelper.yml/badge.svg)
