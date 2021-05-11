@@ -14,10 +14,11 @@ RateLimiter = "24b76ae0-009b-4410-993f-7a05b90d7239"
 
 [compat]
 julia = "^1.5"
-JSON = "0.21"
-RateLimiter = "0.1"
-MacroTools = "0.5"
-Colors = "0.12"
-ColorTypes = "0.11"
-DataFrames = "1.1"
-PyCall = "1.92"
+JSON = "^0.21"
+RateLimiter = "^0.1"
+MacroTools = "^0.5"
+Colors = "^0.12"
+ColorTypes = "^0.11"
+DataFrames = "^1.1"
+PyCall = "^1.92"
+
