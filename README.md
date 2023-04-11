@@ -55,7 +55,7 @@ To install:
 
 To use:
 1. Create a Google Sheets API token from either the [python quick start reference](https://developers.google.com/sheets/api/quickstart/python) or the [developers console](https://console.developers.google.com/apis/credentials).
-2. Place the Google Sheets API `credentials.json` file in `~/.julia/google_sheets/`.
+2. Place the Google Sheets API `credentials.json` file in `~/.julia/config/google_sheets/`.
 3. Connect to Google Sheets using `sheets_client`.
 4. See the scripts directory for examples of using the package.
 
